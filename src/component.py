@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 import numpy as np
 import tcod.map
-import const
 
 
 @dataclass
