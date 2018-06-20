@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-# from utils import Key
 import esper
 import tcod
 import sys
@@ -47,20 +46,18 @@ class Renderable:
 # Event Processor
 # -----------------------------------------------------------------------------
 
-# Note: didn't get tcod.Key to work in key_code dictionary below.
-# End up create my own hashed object instead.
-
 @dataclass
 class Key:
     vk: int = 65
     ch: str = chr(0)
+    pressed: bool = True
     alt: bool = False
     ctrl: bool = False
     meta: bool = False
     shift: bool = False
 
     def __key(self):
-        return self.vk, self.ch, self.alt, self.ctrl, self.shift
+        return self.vk, self.ch, self.pressed, self.alt, self.ctrl, self.shift
 
     def __eq__(self, other):
         return self.__key() == other.__key()
@@ -72,17 +69,9 @@ class Key:
 class EventProcessor(esper.Processor):
     def __init__(self):
         super().__init__()
-        self.mask = tcod.EVENT_KEY_PRESS # | tcod.EVENT_MOUSE
         self.key = tcod.Key()
         self.mouse = tcod.Mouse()
-
-    def process(self):
-        for ent, event in self.world.get_component(Event):
-            tcod.sys_check_for_event(self.mask, self.key, self.mouse)
-            event.action = self.handle_key()
-
-    def handle_key(self):
-        key_code = {
+        self.key_code = {
             Key(vk=tcod.KEY_ENTER, ch='\r', alt=True): {'fullscreen': True},
             Key(vk=tcod.KEY_ESCAPE, ch='\x1b'): {'exit': True},
             Key(vk=tcod.KEY_LEFT, shift=True): {'move': (-1, -1)},
@@ -132,16 +121,27 @@ class EventProcessor(esper.Processor):
             Key(ch='.'): {'move': (0, 0)}
         }
 
-        user_input = Key(
-            vk=self.key.vk, ch=chr(self.key.c),
-            alt=(self.key.lalt or self.key.ralt),
-            ctrl=(self.key.lctrl or self.key.lctrl),
-            meta=(self.key.lmeta or self.key.rmeta),
-            shift=self.key.shift,
-        )
-        if user_input in key_code:
-            return key_code[user_input]
-        return {}
+    def process(self):
+        for ent, event in self.world.get_component(Event):
+            tcod.sys_wait_for_event(
+                mask=tcod.EVENT_ANY,
+                k=self.key,
+                m=self.mouse,
+                flush=False
+            )
+
+            user_input = Key(
+                vk=self.key.vk, ch=chr(self.key.c),
+                alt=(self.key.lalt or self.key.ralt),
+                ctrl=(self.key.lctrl or self.key.lctrl),
+                meta=(self.key.lmeta or self.key.rmeta),
+                shift=self.key.shift, pressed=self.key.pressed,
+            )
+
+            if tcod.EVENT_KEY and user_input in self.key_code:
+                event.action = self.key_code[user_input]
+            else:
+                event.action = {}
 
 
 # -----------------------------------------------------------------------------
@@ -262,27 +262,23 @@ class Scene:
         self.world = esper.World()
 
     def on_start(self):
-        """Start adding processors to the world"""
         processors = (
             RenderProcessor(),
             EventProcessor(),
             MovementProcessor(),
             ConsoleProcessor()
         )
-        for num, p in enumerate(processors):
-            self.world.add_processor(p, priority=num)
+        for num, proc in enumerate(processors):
+            self.world.add_processor(proc, priority=num)
 
     def on_enter(self):
-        """Start adding entities to the world"""
-        self.world.create_entity(*player(10, 20))
+        self.world.create_entity(*player(x=10, y=20))
 
     def on_update(self):
-        """Run all processor's process method in the game loop"""
         self.world.process()
 
 
 def main():
-    """game loop"""
     scene = Scene()
     scene.on_start()
     scene.on_enter()
