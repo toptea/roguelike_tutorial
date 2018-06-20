@@ -39,13 +39,13 @@ class RenderProcessor(esper.Processor):
         self.clear_all()
 
     def render_map(self):
-        for ent, game_map in self.world.get_component(c.GameMap):
+        for _, game_map in self.world.get_component(c.GameMap):
             self.con.bg[game_map.transparent] = const.COLORS.get('dark_ground')
             self.con.bg[~game_map.transparent] = const.COLORS.get('dark_wall')
 
     def render_all(self):
         generator = self.world.get_components(c.Renderable, c.Position)
-        for ent, (rend, pos) in generator:
+        for _, (rend, pos) in generator:
             self.con.default_fg = rend.fg
             self.con.default_bg = rend.bg
             self.con.print_(
@@ -86,7 +86,7 @@ class RenderProcessor(esper.Processor):
 
     def clear_all(self):
         generator = self.world.get_components(c.Renderable, c.Position)
-        for ent, (rend, pos) in generator:
+        for _, (rend, pos) in generator:
             self.con.print_(
                 x=pos.x,
                 y=pos.y,

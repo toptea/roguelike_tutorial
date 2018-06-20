@@ -55,6 +55,7 @@ class EventProcessor(esper.Processor):
             Key(vk=tcod.KEY_KP7): {'move': (-1, -1)},
             Key(vk=tcod.KEY_KP8): {'move': (0, -1)},
             Key(vk=tcod.KEY_KP9): {'move': (1, -1)},
+            Key(vk=tcod.KEY_F12): {'screenshot': True},
             Key(ch='a'): {},
             Key(ch='b'): {'move': (-1, 1)},
             Key(ch='c'): {},
@@ -85,7 +86,7 @@ class EventProcessor(esper.Processor):
         }
 
     def process(self):
-        for ent, event in self.world.get_component(c.Event):
+        for _, event in self.world.get_component(c.Event):
             tcod.sys_wait_for_event(
                 mask=tcod.EVENT_ANY,
                 k=self.key,
