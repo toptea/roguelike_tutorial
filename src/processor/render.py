@@ -5,7 +5,7 @@ import esper
 import tcod
 
 
-class RenderProcessor(esper.Processor):
+class Render(esper.Processor):
     def __init__(self):
         super().__init__()
 

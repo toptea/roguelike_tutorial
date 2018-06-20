@@ -5,7 +5,7 @@ import tcod
 import sys
 
 
-class ConsoleProcessor(esper.Processor):
+class Console(esper.Processor):
     def __init__(self):
         super().__init__()
 

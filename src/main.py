@@ -1,4 +1,4 @@
-import processor as p
+import processor
 import level
 
 import esper
@@ -12,10 +12,10 @@ class Scene:
 
     def on_start(self):
         processors = (
-            p.RenderProcessor(),
-            p.EventProcessor(),
-            p.MovementProcessor(),
-            p.ConsoleProcessor()
+            processor.Render(),
+            processor.Event(),
+            processor.Movement(),
+            processor.Console()
         )
         for num, proc in enumerate(processors):
             self.world.add_processor(proc, priority=num)
