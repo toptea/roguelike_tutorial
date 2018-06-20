@@ -21,7 +21,9 @@ class Scene:
             self.world.add_processor(proc, priority=num)
 
     def on_enter(self):
+        self.world.create_entity(e.test_map())
         self.world.create_entity(*e.player(x=10, y=20))
+        self.world.create_entity(*e.monster(char='M', fg=tcod.red, x=20, y=20))
 
     def on_update(self):
         self.world.process()

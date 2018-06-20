@@ -8,9 +8,13 @@ class MovementProcessor(esper.Processor):
         super().__init__()
 
     def process(self):
-        for ent, (pos, event) in self.world.get_components(c.Position, c.Event):
+        _, game_map = next(self.world.get_component(c.GameMap))
+        for _, (pos, event) in self.world.get_components(c.Position, c.Event):
             move = event.action.get('move')
             if move:
                 dx, dy = move
-                pos.x += dx
-                pos.y += dy
+                destination_x = pos.x + dx
+                destination_y = pos.y + dy
+                if game_map.walkable[destination_y, destination_x]:
+                    pos.x += dx
+                    pos.y += dy

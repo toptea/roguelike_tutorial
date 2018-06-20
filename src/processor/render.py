@@ -32,10 +32,16 @@ class RenderProcessor(esper.Processor):
 
     def process(self):
         self.render_all()
+        self.render_map()
         self.render_fps_counter()
         self.blit_console()
         self.flush_console()
         self.clear_all()
+
+    def render_map(self):
+        for ent, game_map in self.world.get_component(c.GameMap):
+            self.con.bg[game_map.transparent] = const.COLORS.get('dark_ground')
+            self.con.bg[~game_map.transparent] = const.COLORS.get('dark_wall')
 
     def render_all(self):
         generator = self.world.get_components(c.Renderable, c.Position)
