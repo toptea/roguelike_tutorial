@@ -3,7 +3,7 @@ import component as c
 import esper
 
 
-class MovementProcessor(esper.Processor):
+class Movement(esper.Processor):
     def __init__(self):
         super().__init__()
 

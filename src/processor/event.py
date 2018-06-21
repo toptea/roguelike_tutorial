@@ -29,7 +29,7 @@ class Key:
         return hash(self.__key())
 
 
-class EventProcessor(esper.Processor):
+class Event(esper.Processor):
     def __init__(self):
         super().__init__()
         self.key = tcod.Key()
