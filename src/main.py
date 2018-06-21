@@ -21,7 +21,7 @@ class Scene:
             self.world.add_processor(proc, priority=num)
 
     def on_enter(self):
-        lvl = level.PillarRoomTest()
+        lvl = level.MainLevel()
         lvl.make_map()
         lvl.place_entities()
         lvl.add_to_world(self.world)

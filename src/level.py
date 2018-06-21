@@ -26,6 +26,53 @@ class Level:
                 world.create_entity(*e)
 
 
+class MainLevel(Level):
+    def __init__(self, max_rooms=15, room_min_size=6, room_max_size=10, map_width=80, map_height=45):
+        super().__init__()
+        self.max_rooms = max_rooms
+        self.room_min_size = room_min_size
+        self.room_max_size = room_max_size
+        self.map_width = map_width
+        self.map_height = map_height
+        self.rooms = []
+
+    def _gen_room(self):
+        while True:
+            w = random.randint(self.room_min_size, self.room_max_size)
+            h = random.randint(self.room_min_size, self.room_max_size)
+            x = random.randint(1, self.map_width - w - 1)
+            y = random.randint(1, self.map_height - h - 1)
+            room = Rect(x, y, w, h)
+
+            for other_room in self.rooms:
+                if room.intersect(other_room):
+                    break
+            else:
+                self.rooms.append(room)
+                break
+        create_room(self.game_map, room)
+
+    def _gen_corridor(self):
+        new_x, new_y = self.rooms[-1].center()
+        prev_x, prev_y = self.rooms[-2].center()
+        if random.random() > 0.5:
+            create_h_tunnel(self.game_map, prev_x, new_x, prev_y)
+            create_v_tunnel(self.game_map, prev_y, new_y, new_x)
+        else:
+            create_v_tunnel(self.game_map, prev_y, new_y, prev_x)
+            create_h_tunnel(self.game_map, prev_x, new_x, new_y)
+
+    def make_map(self):
+        for r in range(self.max_rooms):
+            self._gen_room()
+            if len(self.rooms) > 1:
+                self._gen_corridor()
+
+    def place_entities(self):
+        x, y = self.rooms[0].center()
+        self.entities.append(entity.player(x, y))
+
+
 class TwoRoomTest(Level):
 
     def make_map(self):
