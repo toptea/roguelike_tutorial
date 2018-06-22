@@ -18,3 +18,5 @@ class Movement(esper.Processor):
                 if game_map.walkable[destination_y, destination_x]:
                     pos.x += dx
                     pos.y += dy
+
+                    event.fov_compute = True

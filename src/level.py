@@ -27,13 +27,13 @@ class Level:
 
 
 class MainLevel(Level):
-    def __init__(self, max_rooms=15, room_min_size=6, room_max_size=10, map_width=80, map_height=45):
+    def __init__(self, max_rooms=15, room_min_size=6, room_max_size=10):
         super().__init__()
         self.max_rooms = max_rooms
         self.room_min_size = room_min_size
         self.room_max_size = room_max_size
-        self.map_width = map_width
-        self.map_height = map_height
+        self.map_width = const.MAP_WIDTH
+        self.map_height = const.MAP_HEIGHT
         self.rooms = []
 
     def _gen_room(self):
@@ -71,6 +71,9 @@ class MainLevel(Level):
     def place_entities(self):
         x, y = self.rooms[0].center()
         self.entities.append(entity.player(x, y))
+        for i in range(1, self.max_rooms):
+            x, y = self.rooms[i].center()
+            self.entities.append(entity.monster('M', tcod.red, x, y))
 
 
 class TwoRoomTest(Level):
@@ -138,15 +141,15 @@ class Rect:
 
 def create_room(game_map, rect):
     game_map.walkable[rect.y1+1:rect.y2, rect.x1+1:rect.x2] = True
-    game_map.transparent[rect.y1+1:rect.y2, rect.x1+1:rect.x2] = True
+    game_map.transparent[:] = game_map.walkable[:]
 
 
 def create_h_tunnel(game_map, x1, x2, y):
     game_map.walkable[y, min(x1, x2):max(x1, x2) + 1] = True
-    game_map.transparent[y, min(x1, x2):max(x1, x2) + 1] = True
+    game_map.transparent[:] = game_map.walkable[:]
 
 
 def create_v_tunnel(game_map, y1, y2, x):
     for y in range(min(y1, y2), max(y1, y2) + 1):
         game_map.walkable[min(y1, y2):max(y1, y2) + 1, x] = True
-        game_map.transparent[min(y1, y2):max(y1, y2) + 1, x] = True
+        game_map.transparent[:] = game_map.walkable[:]

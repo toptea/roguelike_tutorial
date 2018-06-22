@@ -31,29 +31,38 @@ class Render(esper.Processor):
         )
 
     def process(self):
-        self.render_all()
-        self.render_map()
+        _, game_map = next(self.world.get_component(c.GameMap))
+        _, event = next(self.world.get_component(c.Event))
+
+        self.render_map(game_map, event)
+        self.render_all(game_map)
         self.render_fps_counter()
         self.blit_console()
         self.flush_console()
         self.clear_all()
 
-    def render_map(self):
-        for _, game_map in self.world.get_component(c.GameMap):
-            self.con.bg[game_map.transparent] = const.COLORS.get('dark_ground')
-            self.con.bg[~game_map.transparent] = const.COLORS.get('dark_wall')
+    def render_map(self, game_map, event):
+        if event.action.get('reveal_all'):
+            game_map.explored[:] = True
 
-    def render_all(self):
+        if event.fov_recompute:
+            self.con.bg[game_map.walkable & game_map.fov] = const.COLORS.get('light_ground')
+            self.con.bg[~game_map.walkable & game_map.fov] = const.COLORS.get('light_wall')
+            self.con.bg[game_map.walkable & ~game_map.fov & game_map.explored] = const.COLORS.get('dark_ground')
+            self.con.bg[~game_map.walkable & ~game_map.fov & game_map.explored] = const.COLORS.get('dark_wall')
+
+    def render_all(self, game_map):
         generator = self.world.get_components(c.Renderable, c.Position)
         for _, (rend, pos) in generator:
-            self.con.default_fg = rend.fg
-            self.con.default_bg = rend.bg
-            self.con.print_(
-                x=pos.x,
-                y=pos.y,
-                string=rend.char,
-                bg_blend=rend.bg_blend
-            )
+            if game_map.fov[pos.y, pos.x]:
+                self.con.default_fg = rend.fg
+                self.con.default_bg = rend.bg
+                self.con.print_(
+                    x=pos.x,
+                    y=pos.y,
+                    string=rend.char,
+                    bg_blend=rend.bg_blend
+                )
 
     def render_fps_counter(self):
         self.root_console.default_fg = tcod.grey
