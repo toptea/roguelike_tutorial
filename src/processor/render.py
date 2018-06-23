@@ -30,9 +30,7 @@ class Render(esper.Processor):
             height=self.map_height
         )
 
-    def process(self, event, *args):
-        _, game_map = next(self.world.get_component(c.GameMap))
-
+    def process(self, event, game_map, *args):
         self.render_map(game_map, event)
         self.render_all(game_map)
         self.render_fps_counter()

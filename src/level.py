@@ -1,14 +1,25 @@
 import entity
 import const
-
+import numpy as np
 import random
 import string
 import tcod
 
 
+class GameMap(tcod.map.Map):
+    def __init__(self, width, height):
+        # self.width = width
+        # self.height = height
+        # self.transparent = np.zeros((height, width), dtype=np.bool_)
+        # self.walkable = np.zeros((height, width), dtype=np.bool_)
+        # self.fov = np.zeros((height, width), dtype=np.bool_)
+        self.explored = np.zeros((height, width), dtype=np.bool_)
+        super().__init__(width, height)
+
+
 class Level:
     def __init__(self):
-        self.game_map = entity.game_map()
+        self.game_map = GameMap(width=const.MAP_WIDTH, height=const.MAP_HEIGHT)
         self.entities = []
 
     def make_map(self):

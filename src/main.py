@@ -10,6 +10,7 @@ class Scene:
     def __init__(self):
         self.event_processor = input_handler.EventProcessor()
         self.event = input_handler.Event({})
+        self.level_ = level.MainLevel()
         self.world = esper.World()
 
     def on_start(self):
@@ -23,16 +24,18 @@ class Scene:
             self.world.add_processor(proc, priority=num)
 
     def on_enter(self):
-        lvl = level.MainLevel()
-        lvl.make_map()
-        lvl.place_entities()
-        lvl.add_to_world(self.world)
+        self.level_.make_map()
+        self.level_.place_entities()
+        self.level_.add_to_world(self.world)
 
     def on_input(self):
         self.event.action = self.event_processor.process()
 
     def on_update(self):
-        self.world.process(self.event)
+        self.world.process(
+            self.event,
+            self.level_.game_map
+        )
 
 
 def main():

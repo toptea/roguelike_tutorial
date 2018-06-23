@@ -2,10 +2,6 @@ import component as c
 import const
 
 
-def game_map():
-    return c.GameMap(width=const.MAP_WIDTH, height=const.MAP_HEIGHT)
-
-
 def player(x=40, y=20):
     return (
         c.Renderable('@'),
