@@ -1,5 +1,3 @@
-import component as c
-
 import esper
 import tcod
 import sys

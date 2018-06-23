@@ -43,10 +43,31 @@ class Render(esper.Processor):
             game_map.explored[:] = True
 
         if event.fov_recompute:
-            self.con.bg[game_map.walkable & game_map.fov] = const.COLORS.get('light_ground')
-            self.con.bg[~game_map.walkable & game_map.fov] = const.COLORS.get('light_wall')
-            self.con.bg[game_map.walkable & ~game_map.fov & game_map.explored] = const.COLORS.get('dark_ground')
-            self.con.bg[~game_map.walkable & ~game_map.fov & game_map.explored] = const.COLORS.get('dark_wall')
+            light_ground = game_map.walkable & game_map.fov
+            self.con.ch[light_ground] = ord('.')
+            self.con.fg[light_ground] = (150, 150, 150)
+            self.con.bg[light_ground] = (20, 20, 20)
+
+            light_wall = ~game_map.walkable & game_map.fov
+            self.con.ch[light_wall] = ord('#')
+            self.con.fg[light_wall] = (150, 150, 150)
+            self.con.bg[light_wall] = (180, 180, 180)
+
+            dark_ground = game_map.walkable & ~game_map.fov & game_map.explored
+            self.con.ch[dark_ground] = ord('.')
+            self.con.fg[dark_ground] = (20, 20, 20)
+            self.con.bg[dark_ground] = (0, 0, 0)
+
+            dark_wall = ~game_map.walkable & ~game_map.fov & game_map.explored
+            self.con.ch[dark_wall] = ord(' ')
+            self.con.fg[dark_wall] = (20, 20, 20)
+            self.con.bg[dark_wall] = (20, 20, 20)
+
+            # original libtcod tutorial theme
+            # self.con.bg[game_map.walkable & game_map.fov] = const.COLORS.get('light_ground')
+            # self.con.bg[~game_map.walkable & game_map.fov] = const.COLORS.get('light_wall')
+            # self.con.bg[game_map.walkable & ~game_map.fov & game_map.explored] = const.COLORS.get('dark_ground')
+            # self.con.bg[~game_map.walkable & ~game_map.fov & game_map.explored] = const.COLORS.get('dark_wall')
 
     def render_all(self, game_map):
         generator = self.world.get_components(c.Renderable, c.Position)
