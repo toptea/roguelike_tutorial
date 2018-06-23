@@ -55,6 +55,7 @@ class Event(esper.Processor):
             Key(vk=tcod.KEY_KP7): {'move': (-1, -1)},
             Key(vk=tcod.KEY_KP8): {'move': (0, -1)},
             Key(vk=tcod.KEY_KP9): {'move': (1, -1)},
+            Key(vk=tcod.KEY_F5): {'reveal_all': True},
             Key(vk=tcod.KEY_F12): {'screenshot': True},
             Key(ch='a'): {},
             Key(ch='b'): {'move': (-1, 1)},

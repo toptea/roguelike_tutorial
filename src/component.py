@@ -6,6 +6,7 @@ import tcod.map
 @dataclass
 class Event:
     action: dict = None
+    fov_recompute: bool = True
 
 
 @dataclass
@@ -31,6 +32,3 @@ class GameMap(tcod.map.Map):
         # self.fov = np.zeros((height, width), dtype=np.bool_)
         self.explored = np.zeros((height, width), dtype=np.bool_)
         super().__init__(width, height)
-
-    def compute_fov(self, x, y, radius=0, light_walls=True, algorithm=None):
-        raise AttributeError("Please use standalone method instead")

@@ -12,6 +12,7 @@ class Scene:
 
     def on_start(self):
         processors = (
+            processor.FOV(),
             processor.Render(),
             processor.Event(),
             processor.Movement(),

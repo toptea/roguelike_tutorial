@@ -11,9 +11,16 @@ MAP_HEIGHT = 43
 FONT_PATH = 'data/consolas10x10.png'
 FONT_FLAG = tcod.FONT_TYPE_GREYSCALE | tcod.FONT_LAYOUT_TCOD
 
+FOV_ALGORITHM = tcod.FOV_BASIC
+FOV_LIGHT_WALLS = True
+FOV_RADIUS = 10
+
+
 COLORS = {
         'dark_wall': (0, 0, 100),
         'dark_ground': (50, 50, 150),
+        'light_wall': (130, 110, 50),
+        'light_ground': (200, 180, 50)
     }
 
 MONSTER_COLORS = (
