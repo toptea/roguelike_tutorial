@@ -9,13 +9,13 @@ class Console(esper.Processor):
     def __init__(self):
         super().__init__()
 
-    def process(self, *args):
-        for _, event in self.world.get_component(c.Event):
-            if event.action.get('exit'):
-                sys.exit()
+    def process(self, event, *args):
 
-            if event.action.get('fullscreen'):
-                tcod.console_set_fullscreen(not tcod.console_is_fullscreen())
+        if event.action.get('exit'):
+            sys.exit()
 
-            if event.action.get('screenshot'):
-                tcod.sys_save_screenshot()
+        if event.action.get('fullscreen'):
+            tcod.console_set_fullscreen(not tcod.console_is_fullscreen())
+
+        if event.action.get('screenshot'):
+            tcod.sys_save_screenshot()

@@ -4,12 +4,6 @@ import tcod.map
 
 
 @dataclass
-class Event:
-    action: dict = None
-    fov_recompute: bool = True
-
-
-@dataclass
 class IsPlayer:
     pass
 

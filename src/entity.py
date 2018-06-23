@@ -10,7 +10,7 @@ def player(x=40, y=20):
     return (
         c.Renderable('@'),
         c.Position(x=x, y=y),
-        c.Event({}),
+        c.IsPlayer(),
     )
 
 

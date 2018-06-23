@@ -8,9 +8,9 @@ class FOV(esper.Processor):
     def __init__(self):
         super().__init__()
 
-    def process(self, *args):
+    def process(self, event, *args):
         _, game_map = next(self.world.get_component(c.GameMap))
-        for _, (pos, event) in self.world.get_components(c.Position, c.Event):
+        for _, (_, pos) in self.world.get_components(c.IsPlayer, c.Position):
             if event.fov_recompute:
                 tcod.map_compute_fov(
                     game_map,
