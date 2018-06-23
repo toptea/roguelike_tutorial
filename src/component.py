@@ -10,6 +10,11 @@ class Event:
 
 
 @dataclass
+class IsPlayer:
+    pass
+
+
+@dataclass
 class Position:
     x: int
     y: int

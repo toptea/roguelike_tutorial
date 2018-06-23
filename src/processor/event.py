@@ -86,7 +86,7 @@ class Event(esper.Processor):
             Key(ch='.'): {'move': (0, 0)}
         }
 
-    def process(self):
+    def process(self, *args):
         for _, event in self.world.get_component(c.Event):
             tcod.sys_wait_for_event(
                 mask=tcod.EVENT_ANY,

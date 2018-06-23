@@ -7,7 +7,7 @@ class Movement(esper.Processor):
     def __init__(self):
         super().__init__()
 
-    def process(self):
+    def process(self, *args):
         _, game_map = next(self.world.get_component(c.GameMap))
         for _, (pos, event) in self.world.get_components(c.Position, c.Event):
             move = event.action.get('move')
