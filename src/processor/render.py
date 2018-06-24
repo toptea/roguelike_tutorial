@@ -42,8 +42,8 @@ class Render(esper.Processor):
         if event.action.get('reveal_all'):
             game_map.explored[:] = True
 
-        # game_map.fov[:] = True
-        # event.fov_recompute = True
+        game_map.fov[:] = True
+        event.fov_recompute = True
         if event.fov_recompute:
             """
             light_ground = game_map.walkable & game_map.fov

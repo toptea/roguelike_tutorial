@@ -97,6 +97,184 @@ class PillarRoomTest(dungeon.base.Level):
         )
 
 
+class PillarRoomTest(dungeon.base.Level):
+
+    def make_map(self):
+        self.game_map.transparent[:] = True
+        self.game_map.transparent[::3, 2::3] = False
+        self.game_map.transparent[:, 0::const.MAP_WIDTH - 1] = False
+        self.game_map.transparent[0::const.MAP_HEIGHT - 1, :] = False
+        self.game_map.walkable[:] = self.game_map.transparent[:]
+
+    def place_entities(self):
+        self.entities.append(
+            entity.player(x=10, y=20)
+        )
+        self.entities.append(
+            entity.monster(char='M', fg=tcod.red, x=20, y=20)
+        )
+
+# -----------------------------------------------------------------------------
+# Work in Progress. Generate irregular room with 3d walls.
+# -----------------------------------------------------------------------------
+
+import numpy as np
+import skimage.draw
+
+
+def rect(game_map, r0, c0, width, height):
+    rr = [r0, r0 + width, r0 + width, r0]
+    cc = [c0, c0, c0 + height, c0 + height]
+    rr, cc = skimage.draw.polygon(rr, cc)
+    game_map.transparent[rr, cc] = True
+
+
+def irregular_shape(w=20, h=20):
+    angle = np.linspace(0, 2 * np.pi, 100)
+
+    # circle coordinates
+    r_circle = np.sqrt((w / 2) ** 2 + (h / 2) ** 2)
+    x = np.round(np.cos(angle) * r_circle, 2)
+    y = np.round(np.sin(angle) * r_circle, 2)
+
+    # rectangle coordinates
+    x[x > w / 2] = w / 2
+    x[x < -w / 2] = -w / 2
+    y[y > h / 2] = h / 2
+    y[y < -h / 2] = -h / 2
+
+    # noise for x coordinate
+    noise1 = tcod.noise.Noise(
+        dimensions=1,
+        algorithm=tcod.NOISE_SIMPLEX,
+        implementation=tcod.noise.FBM,
+        hurst=0.5,
+        lacunarity=2,
+        octaves=4,
+    )
+
+    # noise for y coordinate
+    noise2 = tcod.noise.Noise(
+        dimensions=1,
+        algorithm=tcod.NOISE_SIMPLEX,
+        implementation=tcod.noise.FBM,
+        hurst=0.5,
+        lacunarity=2,
+        octaves=4,
+    )
+
+    # Return the sampled noise from the grid of points.
+    xn = noise1.sample_ogrid([angle])
+    yn = noise2.sample_ogrid([angle])
+
+    # start and end return to zero
+    xn[:20] = xn[:20] * np.arange(0, 1, 0.05)
+    xn[-20:] = xn[-20:] * np.arange(1, 0, -0.05)
+    yn[:20] = yn[:20] * np.arange(0, 1, 0.05)
+    yn[-20:] = yn[-20:] * np.arange(1, 0, -0.05)
+
+    # add noise
+    x = x + x * xn
+    y = y + y * yn
+
+    # move origin point
+    x = x - min(x) + 3
+    y = y - min(y) + 4
+
+    # update width, height
+    w = int(max(x) + 5)
+    h = int(max(y) + 7)
+
+    # draw to numpy array
+    img = np.zeros((h, w), dtype=np.int)
+    rr, cc = skimage.draw.polygon(y, x)
+    img[rr, cc] = True
+    return img
+
+
+def apply_tileset(img):
+    # move picture in all direction, use the mask as the wall
+    floor = img[2:-2, 2:-2]
+    nw_roof = floor < img[3:-1, 3:-1]
+    ne_roof = floor < img[3:-1, 1:-3]
+    sw_roof = floor < img[1:-3, 3:-1]
+    se_roof = floor < img[1:-3, 1:-3]
+    n_roof = floor < img[3:-1, 2:-2]
+    s_roof = floor < img[1:-3, 2:-2]
+    w_roof = floor < img[2:-2, 3:-1]
+    e_roof = floor < img[2:-2, 1:-3]
+
+    roof_wall1 = (
+        nw_roof + ne_roof + sw_roof + se_roof +
+        n_roof + e_roof + s_roof + w_roof
+    )
+
+    # to create the 3d effect, move picture north and south by 2
+    floor = img[2:-2, 2:-2]
+    lnw_roof = floor < img[4:, 3:-1]
+    lne_roof = floor < img[4:, 1:-3]
+    lsw_roof = floor < img[:-4, 3:-1]
+    lse_roof = floor < img[:-4, 1:-3]
+    ln_roof = floor < img[4:, 2:-2]
+    ls_roof = floor < img[:-4, 2:-2]
+    w_roof = floor < img[2:-2, 3:-1]
+    e_roof = floor < img[2:-2, 1:-3]
+
+    roof_wall2 = (
+        lnw_roof + lne_roof + lsw_roof + lse_roof +
+        ln_roof + ls_roof + roof_wall1
+    )
+
+    # create wall and roof
+    final = roof_wall2[:-1] << roof_wall2[1:]
+    final = final.astype(np.int16)
+    # remove wall with no roof
+    wall_with_no_roof = (final == 1)[1:-1, 1:-1] & (final == 0)[0:-2, 1:-1]
+    final[1:-1, 1:-1][wall_with_no_roof] = 249  # change to floor
+
+    # final[floor] = 3
+    final[floor[:-1] == 1] = 249  # floor
+    final[final == 1] = 176  # wall
+    final[final == 2] = 219  # roof
+    return final
+
+
+class IrregularRoomTest(dungeon.base.Level):
+
+    def make_map(self):
+        # top_left
+        img = irregular_shape(10, 10)
+        img = apply_tileset(img)
+        self.game_map.ch[:img.shape[0], :img.shape[1]] = img
+
+        # bottom_left
+        img = irregular_shape(10, 10)
+        img = apply_tileset(img)
+        self.game_map.ch[:img.shape[0], const.MAP_WIDTH - img.shape[1]:] = img
+
+        # top_right
+        img = irregular_shape(10, 10)
+        img = apply_tileset(img)
+        self.game_map.ch[const.MAP_HEIGHT - img.shape[0]:, :img.shape[1]] = img
+
+        # bottom_right
+        img = irregular_shape(10, 10)
+        img = apply_tileset(img)
+        self.game_map.ch[const.MAP_HEIGHT - img.shape[0]:, const.MAP_WIDTH - img.shape[1]:] = img
+
+        self.game_map.walkable[:] = True
+        self.game_map.fg[:] = (150, 150, 150)
+        self.game_map.bg[:] = (20, 20, 20)
+
+
+    def place_entities(self):
+        self.entities.append(
+            entity.player(x=40, y=20)
+        )
+
+# -----------------------------------------------------------------------------
+
+
 class Rect:
     def __init__(self, x, y, w, h):
         self.x1 = x
