@@ -11,6 +11,9 @@ class GameMap(tcod.map.Map):
         # self.walkable = np.zeros((height, width), dtype=np.bool_)
         # self.fov = np.zeros((height, width), dtype=np.bool_)
         self.explored = np.zeros((height, width), dtype=np.bool_)
+        self.ch = np.zeros((height, width), dtype=np.intc)
+        self.fg = np.zeros((height, width), dtype='(3,)u1')
+        self.bg = np.zeros((height, width), dtype='(3,)u1')
         super().__init__(width, height)
 
 

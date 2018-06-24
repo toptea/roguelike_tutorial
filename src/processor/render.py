@@ -42,7 +42,10 @@ class Render(esper.Processor):
         if event.action.get('reveal_all'):
             game_map.explored[:] = True
 
+        # game_map.fov[:] = True
+        # event.fov_recompute = True
         if event.fov_recompute:
+            """
             light_ground = game_map.walkable & game_map.fov
             self.con.ch[light_ground] = ord('.')
             self.con.fg[light_ground] = (150, 150, 150)
@@ -52,9 +55,20 @@ class Render(esper.Processor):
             self.con.ch[light_wall] = ord('#')
             self.con.fg[light_wall] = (150, 150, 150)
             self.con.bg[light_wall] = (180, 180, 180)
+            """
+
+            light_ground = game_map.walkable & game_map.fov
+            self.con.ch[light_ground] = game_map.ch[light_ground]
+            self.con.fg[light_ground] = game_map.fg[light_ground]
+            self.con.bg[light_ground] = game_map.bg[light_ground]
+
+            light_wall = ~game_map.walkable & game_map.fov
+            self.con.ch[light_wall] = game_map.ch[light_wall]
+            self.con.fg[light_wall] = game_map.fg[light_wall]
+            self.con.bg[light_wall] = game_map.bg[light_wall]
 
             dark_ground = game_map.walkable & ~game_map.fov & game_map.explored
-            self.con.ch[dark_ground] = ord('.')
+            self.con.ch[dark_ground] = 250
             self.con.fg[dark_ground] = (20, 20, 20)
             self.con.bg[dark_ground] = (0, 0, 0)
 

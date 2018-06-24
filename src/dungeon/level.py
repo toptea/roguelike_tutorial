@@ -122,6 +122,15 @@ class Rect:
 def create_room(game_map, rect):
     game_map.walkable[rect.y1+1:rect.y2, rect.x1+1:rect.x2] = True
     game_map.transparent[:] = game_map.walkable[:]
+    light_ground = game_map.walkable
+    game_map.ch[light_ground] = ord('.')
+    game_map.fg[light_ground] = (150, 150, 150)
+    game_map.bg[light_ground] = (20, 20, 20)
+
+    light_wall = ~game_map.walkable
+    game_map.ch[light_wall] = ord('#')
+    game_map.fg[light_wall] = (150, 150, 150)
+    game_map.bg[light_wall] = (180, 180, 180)
 
 
 def create_h_tunnel(game_map, x1, x2, y):
