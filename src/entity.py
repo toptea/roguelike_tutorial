@@ -1,5 +1,4 @@
 import component as c
-import const
 
 
 def player(x=40, y=20):

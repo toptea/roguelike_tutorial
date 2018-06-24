@@ -1,5 +1,5 @@
 import processor
-import level
+import dungeon.level
 import input_handler
 import esper
 import tcod
@@ -10,7 +10,7 @@ class Scene:
     def __init__(self):
         self.event_processor = input_handler.EventProcessor()
         self.event = input_handler.Event({})
-        self.level_ = level.MainLevel()
+        self.level = dungeon.level.MainLevel()
         self.world = esper.World()
 
     def on_start(self):
@@ -24,9 +24,13 @@ class Scene:
             self.world.add_processor(proc, priority=num)
 
     def on_enter(self):
-        self.level_.make_map()
-        self.level_.place_entities()
-        self.level_.add_to_world(self.world)
+        self.level.make_map()
+        self.level.place_entities()
+        for entity in self.level.entities:
+            if len(entity) <= 1:
+                self.world.create_entity(entity)
+            else:
+                self.world.create_entity(*entity)
 
     def on_input(self):
         self.event.action = self.event_processor.process()
@@ -34,7 +38,7 @@ class Scene:
     def on_update(self):
         self.world.process(
             self.event,
-            self.level_.game_map
+            self.level.game_map
         )
 
 

@@ -1,43 +1,12 @@
 import entity
 import const
-import numpy as np
+import dungeon.base
 import random
 import string
 import tcod
 
 
-class GameMap(tcod.map.Map):
-    def __init__(self, width, height):
-        # self.width = width
-        # self.height = height
-        # self.transparent = np.zeros((height, width), dtype=np.bool_)
-        # self.walkable = np.zeros((height, width), dtype=np.bool_)
-        # self.fov = np.zeros((height, width), dtype=np.bool_)
-        self.explored = np.zeros((height, width), dtype=np.bool_)
-        super().__init__(width, height)
-
-
-class Level:
-    def __init__(self):
-        self.game_map = GameMap(width=const.MAP_WIDTH, height=const.MAP_HEIGHT)
-        self.entities = []
-
-    def make_map(self):
-        raise NotImplementedError
-
-    def place_entities(self):
-        raise NotImplementedError
-
-    def add_to_world(self, world):
-        world.create_entity(self.game_map)
-        for e in self.entities:
-            if len(e) <= 1:
-                world.create_entity(e)
-            else:
-                world.create_entity(*e)
-
-
-class MainLevel(Level):
+class MainLevel(dungeon.base.Level):
     def __init__(self, max_rooms=15, room_min_size=6, room_max_size=10):
         super().__init__()
         self.max_rooms = max_rooms
@@ -87,7 +56,7 @@ class MainLevel(Level):
             self.entities.append(entity.monster('M', tcod.red, x, y))
 
 
-class TwoRoomTest(Level):
+class TwoRoomTest(dungeon.base.Level):
 
     def make_map(self):
         room1 = Rect(20, 15, 10, 15)
@@ -110,7 +79,7 @@ class TwoRoomTest(Level):
         self.entities.append(entity.player(x=40, y=20))
 
 
-class PillarRoomTest(Level):
+class PillarRoomTest(dungeon.base.Level):
 
     def make_map(self):
         self.game_map.transparent[:] = True
