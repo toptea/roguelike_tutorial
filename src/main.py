@@ -10,7 +10,7 @@ class Scene:
     def __init__(self):
         self.event_processor = input_handler.EventProcessor()
         self.event = input_handler.Event({})
-        self.level = dungeon.level.IrregularRoomTest()
+        self.level = dungeon.level.MainLevel()
         self.world = esper.World()
 
     def on_start(self):

@@ -4,6 +4,7 @@ import dungeon.base
 import random
 import string
 import tcod
+import dungeon.prefab
 
 
 class MainLevel(dungeon.base.Level):
@@ -15,6 +16,7 @@ class MainLevel(dungeon.base.Level):
         self.map_width = const.MAP_WIDTH
         self.map_height = const.MAP_HEIGHT
         self.rooms = []
+        self.game_map.walkable[:] = False
 
     def _gen_room(self):
         while True:
@@ -22,7 +24,7 @@ class MainLevel(dungeon.base.Level):
             h = random.randint(self.room_min_size, self.room_max_size)
             x = random.randint(1, self.map_width - w - 1)
             y = random.randint(1, self.map_height - h - 1)
-            room = Rect(x, y, w, h)
+            room = dungeon.prefab.Rect(x, y, w, h)
 
             for other_room in self.rooms:
                 if room.intersect(other_room):
@@ -30,23 +32,28 @@ class MainLevel(dungeon.base.Level):
             else:
                 self.rooms.append(room)
                 break
-        create_room(self.game_map, room)
+
+        room.create_floor(self.game_map)
 
     def _gen_corridor(self):
         new_x, new_y = self.rooms[-1].center()
         prev_x, prev_y = self.rooms[-2].center()
         if random.random() > 0.5:
-            create_h_tunnel(self.game_map, prev_x, new_x, prev_y)
-            create_v_tunnel(self.game_map, prev_y, new_y, new_x)
+            dungeon.prefab.create_h_tunnel(self.game_map, prev_x, new_x, prev_y)
+            dungeon.prefab.create_v_tunnel(self.game_map, prev_y, new_y, new_x)
         else:
-            create_v_tunnel(self.game_map, prev_y, new_y, prev_x)
-            create_h_tunnel(self.game_map, prev_x, new_x, new_y)
+            dungeon.prefab.create_v_tunnel(self.game_map, prev_y, new_y, prev_x)
+            dungeon.prefab.create_h_tunnel(self.game_map, prev_x, new_x, new_y)
 
     def make_map(self):
         for r in range(self.max_rooms):
             self._gen_room()
             if len(self.rooms) > 1:
                 self._gen_corridor()
+
+        self.game_map.ch[2:-3, 2:-2] = apply_tileset(self.game_map.walkable)
+        self.game_map.fg[:] = (180, 180, 180)
+        self.game_map.bg[:] = (20, 20, 20)
 
     def place_entities(self):
         x, y = self.rooms[0].center()
@@ -59,11 +66,11 @@ class MainLevel(dungeon.base.Level):
 class TwoRoomTest(dungeon.base.Level):
 
     def make_map(self):
-        room1 = Rect(20, 15, 10, 15)
-        room2 = Rect(35, 15, 10, 15)
-        create_room(self.game_map, room1)
-        create_room(self.game_map, room2)
-        create_h_tunnel(self.game_map, 25, 40, 23)
+        room1 = dungeon.prefab.Rect(20, 15, 10, 15)
+        room2 = dungeon.prefab.Rect(35, 15, 10, 15)
+        room1.create_floor(self.game_map)
+        room2.create_floor(self.game_map)
+        dungeon.prefab.create_h_tunnel(self.game_map, 25, 40, 23)
 
     def place_entities(self):
         for _ in range(10):
@@ -96,23 +103,6 @@ class PillarRoomTest(dungeon.base.Level):
             entity.monster(char='M', fg=tcod.red, x=20, y=20)
         )
 
-
-class PillarRoomTest(dungeon.base.Level):
-
-    def make_map(self):
-        self.game_map.transparent[:] = True
-        self.game_map.transparent[::3, 2::3] = False
-        self.game_map.transparent[:, 0::const.MAP_WIDTH - 1] = False
-        self.game_map.transparent[0::const.MAP_HEIGHT - 1, :] = False
-        self.game_map.walkable[:] = self.game_map.transparent[:]
-
-    def place_entities(self):
-        self.entities.append(
-            entity.player(x=10, y=20)
-        )
-        self.entities.append(
-            entity.monster(char='M', fg=tcod.red, x=20, y=20)
-        )
 
 # -----------------------------------------------------------------------------
 # Work in Progress. Generate irregular room with 3d walls.
@@ -217,8 +207,6 @@ def apply_tileset(img):
     lse_roof = floor < img[:-4, 1:-3]
     ln_roof = floor < img[4:, 2:-2]
     ls_roof = floor < img[:-4, 2:-2]
-    w_roof = floor < img[2:-2, 3:-1]
-    e_roof = floor < img[2:-2, 1:-3]
 
     roof_wall2 = (
         lnw_roof + lne_roof + lsw_roof + lse_roof +
@@ -272,6 +260,9 @@ class IrregularRoomTest(dungeon.base.Level):
             entity.player(x=40, y=20)
         )
 
+"""
+# -----------------------------------------------------------------------------
+# Room and Tunnels
 # -----------------------------------------------------------------------------
 
 
@@ -288,7 +279,6 @@ class Rect:
         return center_x, center_y
 
     def intersect(self, other_rect):
-        """returns true if this rectangle intersects with another one"""
         return (
             self.x1 <= other_rect.x2 and
             self.x2 >= other_rect.x1 and
@@ -320,3 +310,4 @@ def create_v_tunnel(game_map, y1, y2, x):
     for y in range(min(y1, y2), max(y1, y2) + 1):
         game_map.walkable[min(y1, y2):max(y1, y2) + 1, x] = True
         game_map.transparent[:] = game_map.walkable[:]
+"""
