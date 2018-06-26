@@ -45,17 +45,6 @@ class Render(esper.Processor):
         game_map.fov[:] = True
         event.fov_recompute = True
         if event.fov_recompute:
-            """
-            light_ground = game_map.walkable & game_map.fov
-            self.con.ch[light_ground] = ord('.')
-            self.con.fg[light_ground] = (150, 150, 150)
-            self.con.bg[light_ground] = (20, 20, 20)
-
-            light_wall = ~game_map.walkable & game_map.fov
-            self.con.ch[light_wall] = ord('#')
-            self.con.fg[light_wall] = (150, 150, 150)
-            self.con.bg[light_wall] = (180, 180, 180)
-            """
 
             light_ground = game_map.walkable & game_map.fov
             self.con.ch[light_ground] = game_map.ch[light_ground]

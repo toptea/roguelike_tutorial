@@ -1,5 +1,5 @@
 import processor
-import dungeon.level
+import level
 import input_handler
 import esper
 import tcod
@@ -10,12 +10,12 @@ class Scene:
     def __init__(self):
         self.event_processor = input_handler.EventProcessor()
         self.event = input_handler.Event({})
-        self.level = dungeon.level.MainLevel()
+        self.level = level.Level(12, 5, 10)
         self.world = esper.World()
 
     def on_start(self):
         processors = (
-            # processor.FOV(),
+            processor.FOV(),
             processor.Render(),
             processor.Movement(),
             processor.Console()
@@ -24,6 +24,7 @@ class Scene:
             self.world.add_processor(proc, priority=num)
 
     def on_enter(self):
+        self.level.make_blueprint()
         self.level.make_map()
         self.level.place_entities()
         for entity in self.level.entities:
