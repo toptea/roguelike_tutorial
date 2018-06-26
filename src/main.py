@@ -1,6 +1,6 @@
 import processor
 import level
-
+import input_handler
 import esper
 import tcod
 
@@ -8,13 +8,15 @@ import tcod
 class Scene:
 
     def __init__(self):
+        self.event_processor = input_handler.EventProcessor()
+        self.event = input_handler.Event({})
+        self.level = level.Level(12, 5, 10)
         self.world = esper.World()
 
     def on_start(self):
         processors = (
             processor.FOV(),
             processor.Render(),
-            processor.Event(),
             processor.Movement(),
             processor.Console()
         )
@@ -22,13 +24,23 @@ class Scene:
             self.world.add_processor(proc, priority=num)
 
     def on_enter(self):
-        lvl = level.MainLevel()
-        lvl.make_map()
-        lvl.place_entities()
-        lvl.add_to_world(self.world)
+        self.level.make_blueprint()
+        self.level.make_map()
+        self.level.place_entities()
+        for entity in self.level.entities:
+            if len(entity) <= 1:
+                self.world.create_entity(entity)
+            else:
+                self.world.create_entity(*entity)
+
+    def on_input(self):
+        self.event.action = self.event_processor.process()
 
     def on_update(self):
-        self.world.process()
+        self.world.process(
+            self.event,
+            self.level.game_map
+        )
 
 
 def main():
@@ -36,6 +48,7 @@ def main():
     scene.on_start()
     scene.on_enter()
     while not tcod.console_is_window_closed():
+        scene.on_input()
         scene.on_update()
 
 

@@ -1,8 +1,11 @@
 from dataclasses import dataclass
-import component as c
-
-import esper
 import tcod
+
+
+@dataclass
+class Event:
+    action: dict = None
+    fov_recompute: bool = True
 
 
 @dataclass
@@ -29,9 +32,8 @@ class Key:
         return hash(self.__key())
 
 
-class Event(esper.Processor):
+class EventProcessor:
     def __init__(self):
-        super().__init__()
         self.key = tcod.Key()
         self.mouse = tcod.Mouse()
         self.key_code = {
@@ -87,23 +89,23 @@ class Event(esper.Processor):
         }
 
     def process(self):
-        for _, event in self.world.get_component(c.Event):
-            tcod.sys_wait_for_event(
-                mask=tcod.EVENT_ANY,
-                k=self.key,
-                m=self.mouse,
-                flush=False
-            )
 
-            user_input = Key(
-                vk=self.key.vk, ch=chr(self.key.c),
-                alt=(self.key.lalt or self.key.ralt),
-                ctrl=(self.key.lctrl or self.key.lctrl),
-                meta=(self.key.lmeta or self.key.rmeta),
-                shift=self.key.shift, pressed=self.key.pressed,
-            )
+        tcod.sys_wait_for_event(
+            mask=tcod.EVENT_ANY,
+            k=self.key,
+            m=self.mouse,
+            flush=False
+        )
 
-            if tcod.EVENT_KEY and user_input in self.key_code:
-                event.action = self.key_code[user_input]
-            else:
-                event.action = {}
+        user_input = Key(
+            vk=self.key.vk, ch=chr(self.key.c),
+            alt=(self.key.lalt or self.key.ralt),
+            ctrl=(self.key.lctrl or self.key.lctrl),
+            meta=(self.key.lmeta or self.key.rmeta),
+            shift=self.key.shift, pressed=self.key.pressed,
+        )
+
+        if tcod.EVENT_KEY and user_input in self.key_code:
+            return self.key_code[user_input]
+        else:
+            return {}

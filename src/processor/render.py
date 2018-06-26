@@ -30,10 +30,7 @@ class Render(esper.Processor):
             height=self.map_height
         )
 
-    def process(self):
-        _, game_map = next(self.world.get_component(c.GameMap))
-        _, event = next(self.world.get_component(c.Event))
-
+    def process(self, event, game_map, *args):
         self.render_map(game_map, event)
         self.render_all(game_map)
         self.render_fps_counter()
@@ -45,11 +42,35 @@ class Render(esper.Processor):
         if event.action.get('reveal_all'):
             game_map.explored[:] = True
 
+        game_map.fov[:] = True
+        event.fov_recompute = True
         if event.fov_recompute:
-            self.con.bg[game_map.walkable & game_map.fov] = const.COLORS.get('light_ground')
-            self.con.bg[~game_map.walkable & game_map.fov] = const.COLORS.get('light_wall')
-            self.con.bg[game_map.walkable & ~game_map.fov & game_map.explored] = const.COLORS.get('dark_ground')
-            self.con.bg[~game_map.walkable & ~game_map.fov & game_map.explored] = const.COLORS.get('dark_wall')
+
+            light_ground = game_map.walkable & game_map.fov
+            self.con.ch[light_ground] = game_map.ch[light_ground]
+            self.con.fg[light_ground] = game_map.fg[light_ground]
+            self.con.bg[light_ground] = game_map.bg[light_ground]
+
+            light_wall = ~game_map.walkable & game_map.fov
+            self.con.ch[light_wall] = game_map.ch[light_wall]
+            self.con.fg[light_wall] = game_map.fg[light_wall]
+            self.con.bg[light_wall] = game_map.bg[light_wall]
+
+            dark_ground = game_map.walkable & ~game_map.fov & game_map.explored
+            self.con.ch[dark_ground] = 250
+            self.con.fg[dark_ground] = (20, 20, 20)
+            self.con.bg[dark_ground] = (0, 0, 0)
+
+            dark_wall = ~game_map.walkable & ~game_map.fov & game_map.explored
+            self.con.ch[dark_wall] = ord(' ')
+            self.con.fg[dark_wall] = (20, 20, 20)
+            self.con.bg[dark_wall] = (20, 20, 20)
+
+            # original libtcod tutorial theme
+            # self.con.bg[game_map.walkable & game_map.fov] = const.COLORS.get('light_ground')
+            # self.con.bg[~game_map.walkable & game_map.fov] = const.COLORS.get('light_wall')
+            # self.con.bg[game_map.walkable & ~game_map.fov & game_map.explored] = const.COLORS.get('dark_ground')
+            # self.con.bg[~game_map.walkable & ~game_map.fov & game_map.explored] = const.COLORS.get('dark_wall')
 
     def render_all(self, game_map):
         generator = self.world.get_components(c.Renderable, c.Position)
