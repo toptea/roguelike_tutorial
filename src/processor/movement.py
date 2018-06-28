@@ -4,6 +4,9 @@ import esper
 
 
 class Movement(esper.Processor):
+
+    scene = None
+
     def __init__(self):
         super().__init__()
 

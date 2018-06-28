@@ -6,25 +6,16 @@ import tcod
 
 
 class Render(esper.Processor):
-    def __init__(self):
+
+    scene = None
+
+    def __init__(self, root_console):
         super().__init__()
 
-        self.screen_width = const.SCREEN_WIDTH
-        self.screen_height = const.SCREEN_HEIGHT
         self.map_width = const.MAP_WIDTH
         self.map_height = const.MAP_HEIGHT
 
-        tcod.console_set_custom_font(
-            fontFile=const.FONT_PATH,
-            flags=const.FONT_FLAG
-        )
-
-        self.root_console = tcod.console_init_root(
-            w=self.screen_width,
-            h=self.screen_height,
-            title=const.TITLE
-        )
-
+        self.root_console = root_console
         self.con = tcod.console.Console(
             width=self.map_width,
             height=self.map_height

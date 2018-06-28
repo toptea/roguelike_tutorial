@@ -4,6 +4,9 @@ import sys
 
 
 class Console(esper.Processor):
+
+    scene = None
+
     def __init__(self):
         super().__init__()
 
@@ -17,3 +20,6 @@ class Console(esper.Processor):
 
         if event.action.get('screenshot'):
             tcod.sys_save_screenshot()
+
+        if event.action.get('change_scene'):
+            self.scene.director.change_scene()

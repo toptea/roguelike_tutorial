@@ -1,56 +1,81 @@
 import processor
 import level
-import input_handler
+import input
 import esper
 import tcod
+import const
+
+
+class Director:
+
+    def __init__(self):
+        Scene.director = self
+
+        tcod.console_set_custom_font(
+            fontFile=const.FONT_PATH,
+            flags=const.FONT_FLAG
+        )
+
+        self.root_console = tcod.console_init_root(
+            w=const.SCREEN_WIDTH,
+            h=const.SCREEN_HEIGHT,
+            title=const.TITLE
+        )
+
+        self.scenes = []
+        self.current_scene = Scene()
+
+    def load_scene(self):
+        self.current_scene = Scene()
+
+    def run(self):
+        while not tcod.console_is_window_closed():
+            self.current_scene.update()
 
 
 class Scene:
 
-    def __init__(self):
-        self.event_processor = input_handler.EventProcessor()
-        self.event = input_handler.Event({})
-        self.level = level.Level(12, 5, 10)
-        self.world = esper.World()
+    director = None
 
-    def on_start(self):
+    def __init__(self):
+        self.event = input.EventProcessor()
+        self.level = level.Level()
+        self.world = esper.World()
+        self._load_processors()
+        self._load_level()
+        self._load_entities()
+
+    def _load_processors(self):
         processors = (
             processor.FOV(),
-            processor.Render(),
+            processor.Render(self.director.root_console),
             processor.Movement(),
             processor.Console()
         )
-        for num, proc in enumerate(processors):
-            self.world.add_processor(proc, priority=num)
+        for priority, processor_ in enumerate(processors):
+            self.world.add_processor(processor_, priority)
+            processor_.scene = self
 
-    def on_enter(self):
+    def _load_level(self):
         self.level.make_blueprint()
         self.level.make_map()
         self.level.place_entities()
+
+    def _load_entities(self):
         for entity in self.level.entities:
             if len(entity) <= 1:
                 self.world.create_entity(entity)
             else:
                 self.world.create_entity(*entity)
 
-    def on_input(self):
-        self.event.action = self.event_processor.process()
-
-    def on_update(self):
+    def update(self):
+        self.event.process()
         self.world.process(
             self.event,
             self.level.game_map
         )
 
 
-def main():
-    scene = Scene()
-    scene.on_start()
-    scene.on_enter()
-    while not tcod.console_is_window_closed():
-        scene.on_input()
-        scene.on_update()
-
-
 if __name__ == '__main__':
-    main()
+    game = Director()
+    game.run()

@@ -5,6 +5,9 @@ import const
 
 
 class FOV(esper.Processor):
+
+    scene = None
+
     def __init__(self):
         super().__init__()
 

@@ -161,11 +161,21 @@ def draw_horizontal_tunnel(array, x1, x2, y):
     array[y, min(x1, x2):max(x1, x2) + 1] = True
 
 
-def create_vertical_tunnel(array, y1, y2, x):
+def draw_vertical_tunnel(array, y1, y2, x):
     array[min(y1, y2):max(y1, y2) + 1, x] = True
 
 
-def draw_diagonal_tunnel(array, x1, y1, x2, y2):
+def draw_horiz_to_vert_tunnel(array, y1, x1, y2, x2):
+    draw_horizontal_tunnel(array, x1, x2, y1)
+    draw_vertical_tunnel(array, y1, y2, x2)
+
+
+def draw_vert_to_horiz_tunnel(array, y1, x1, y2, x2):
+    draw_vertical_tunnel(array, y1, y2, x1)
+    draw_horizontal_tunnel(array, x1, x2, y2)
+
+
+def draw_diagonal_tunnel(array, y1, x1, y2, x2):
     x_offset, y_offset = 0, 0
     x_diff = max(x2, x1) - min(x2, x1)
     y_diff = max(y2, y1) - min(y2, y1)
@@ -203,64 +213,84 @@ class GameMap(tcod.map.Map):
 # -----------------------------------------------------------------------------
 
 class Level:
-    def __init__(self, max_rooms, room_min_size, room_max_size):
-        self.blueprint = np.zeros((const.MAP_HEIGHT + 5, const.MAP_WIDTH + 5), dtype=np.bool_)
-        self.blueprint_cropped = self.blueprint[2:-2, 2:-3]
-        self.max_rooms = max_rooms
-        self.room_min_size = room_min_size
-        self.room_max_size = room_max_size
+    def __init__(self, **kwargs):
+        self.max_rooms = kwargs.get('max_rooms', 12)
+        self.room_min_width = kwargs.get('room_min_width', 5)
+        self.room_max_width = kwargs.get('room_max_width', 10)
+        self.room_min_height = kwargs.get('room_min_height', 5)
+        self.room_max_height = kwargs.get('room_max_height', 10)
+
+        self.room_probabilities = (
+                kwargs.get('prob_irregular_rect_room', 0.60),
+                kwargs.get('prob_irregular_circ_room', 0.35),
+                kwargs.get('prob_ellipse_room', 0.05),
+                kwargs.get('prob_rect_room', 0.00)
+            )
+
+        self.tunnel_probabilities = (
+            kwargs.get('prob_h_to_v_tunnel', 0.44),
+            kwargs.get('prob_v_to_h_tunnel', 0.44),
+            kwargs.get('prob_diagonal_tunnel', 0.12),
+        )
+
         self.map_width = const.MAP_WIDTH
         self.map_height = const.MAP_HEIGHT
-        self.room_intersected = 0
+        self.blueprint = np.zeros((const.MAP_HEIGHT + 5, const.MAP_WIDTH + 5), dtype=np.bool_)
+        self.blueprint_cropped = self.blueprint[2:-2, 2:-2]
+        self.game_map = GameMap(const.MAP_WIDTH, const.MAP_HEIGHT)
+
         self.rooms = []
         self.entities = []
-        self.game_map = GameMap(const.MAP_WIDTH, const.MAP_HEIGHT)
 
     def _gen_room(self):
         """used in _make_blueprint() method"""
-
         while True:
-            # randomized room location, size and it's type
-            w = random.randint(self.room_min_size, self.room_max_size)
-            h = random.randint(self.room_min_size, self.room_max_size)
-            x = random.randint(1, self.map_width - w - 1)
-            y = random.randint(1, self.map_height - h - 1)
-            room_type = random.random()
+            w = np.random.randint(self.room_min_width, self.room_max_width)
+            h = np.random.randint(self.room_min_height, self.room_max_height)
+            x = np.random.randint(1, self.map_width - w - 1)
+            y = np.random.randint(1, self.map_height - h - 1)
 
-            # room type probability
-            if room_type < 0.6:
-                room = Irregular(x, y, w, h, self.map_width, self.map_height, is_rect=True)
-            elif room_type < 0.95:
-                room = Irregular(x, y, w-1, h-2, self.map_width, self.map_height, is_rect=False)
-            else:
-                room = Ellipse(x, y, w, h)
+            room_type = (
+                Irregular(x, y, w, h, self.map_width, self.map_height, is_rect=True),
+                Irregular(x, y, w-1, h-2, self.map_width, self.map_height, is_rect=False),
+                Ellipse(x, y, w, h),
+                Rect(x, y, w, h),
+            )
+
+            room = np.random.choice(
+                a=room_type,
+                size=1,
+                p=self.room_probabilities
+            )[0]
 
             for r in self.rooms:
                 if room.intersect(r):
+                    print('intersect!')
                     break
             else:
                 self.rooms.append(room)
                 break
 
-        # draw room on blueprint
         room.draw(self.blueprint_cropped)
 
     def _gen_corridor(self):
         """used in _make_blueprint() method"""
-        # get room centre coordinates
         new_y, new_x = self.rooms[-1].center()
         prev_y, prev_x = self.rooms[-2].center()
-        tunnel_type = random.random()
 
-        # tunnel type probability
-        if tunnel_type < 0.425:
-            draw_horizontal_tunnel(self.blueprint_cropped, prev_x, new_x, prev_y)
-            create_vertical_tunnel(self.blueprint_cropped, prev_y, new_y, new_x)
-        elif tunnel_type < 0.85:
-            create_vertical_tunnel(self.blueprint_cropped, prev_y, new_y, prev_x)
-            draw_horizontal_tunnel(self.blueprint_cropped, prev_x, new_x, new_y)
-        else:
-            draw_diagonal_tunnel(self.blueprint_cropped, prev_x, prev_y, new_x, new_y)
+        draw_tunnel_type = (
+            draw_horiz_to_vert_tunnel,
+            draw_vert_to_horiz_tunnel,
+            draw_diagonal_tunnel,
+        )
+
+        draw_tunnel = np.random.choice(
+            a=draw_tunnel_type,
+            size=1,
+            p=self.tunnel_probabilities
+        )[0]
+
+        draw_tunnel(self.blueprint_cropped, prev_y, prev_x, new_y, new_x)
 
     def make_blueprint(self):
         for r in range(self.max_rooms):
@@ -273,7 +303,12 @@ class Level:
         # move room in all direction, use the mask as the wall
         # to create the 3d effect, move picture north and south by 2
         floor = self.blueprint[2:-2, 2:-2]
-
+        lnw_roof = floor < self.blueprint[4:, 3:-1]
+        lne_roof = floor < self.blueprint[4:, 1:-3]
+        lsw_roof = floor < self.blueprint[:-4, 3:-1]
+        lse_roof = floor < self.blueprint[:-4, 1:-3]
+        ln_roof = floor < self.blueprint[4:, 2:-2]
+        ls_roof = floor < self.blueprint[:-4, 2:-2]
         nw_roof = floor < self.blueprint[3:-1, 3:-1]
         ne_roof = floor < self.blueprint[3:-1, 1:-3]
         sw_roof = floor < self.blueprint[1:-3, 3:-1]
@@ -282,12 +317,6 @@ class Level:
         s_roof = floor < self.blueprint[1:-3, 2:-2]
         w_roof = floor < self.blueprint[2:-2, 3:-1]
         e_roof = floor < self.blueprint[2:-2, 1:-3]
-        lnw_roof = floor < self.blueprint[4:, 3:-1]
-        lne_roof = floor < self.blueprint[4:, 1:-3]
-        lsw_roof = floor < self.blueprint[:-4, 3:-1]
-        lse_roof = floor < self.blueprint[:-4, 1:-3]
-        ln_roof = floor < self.blueprint[4:, 2:-2]
-        ls_roof = floor < self.blueprint[:-4, 2:-2]
 
         roof_wall = (
             ln_roof + lnw_roof + lne_roof +

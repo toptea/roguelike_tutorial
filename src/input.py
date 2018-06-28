@@ -36,6 +36,7 @@ class EventProcessor:
     def __init__(self):
         self.key = tcod.Key()
         self.mouse = tcod.Mouse()
+        self.action = {}
         self.key_code = {
             Key(vk=tcod.KEY_ENTER, ch='\r', alt=True): {'fullscreen': True},
             Key(vk=tcod.KEY_ESCAPE, ch='\x1b'): {'exit': True},
@@ -57,6 +58,7 @@ class EventProcessor:
             Key(vk=tcod.KEY_KP7): {'move': (-1, -1)},
             Key(vk=tcod.KEY_KP8): {'move': (0, -1)},
             Key(vk=tcod.KEY_KP9): {'move': (1, -1)},
+            Key(vk=tcod.KEY_F1): {'change_scene': True},
             Key(vk=tcod.KEY_F5): {'reveal_all': True},
             Key(vk=tcod.KEY_F12): {'screenshot': True},
             Key(ch='a'): {},
@@ -106,6 +108,6 @@ class EventProcessor:
         )
 
         if tcod.EVENT_KEY and user_input in self.key_code:
-            return self.key_code[user_input]
+            self.action = self.key_code[user_input]
         else:
-            return {}
+            self.action = {}
