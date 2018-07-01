@@ -9,7 +9,7 @@ import const
 class Director:
 
     def __init__(self):
-        Scene.director = self
+        GameScene.director = self
 
         tcod.console_set_custom_font(
             fontFile=const.FONT_PATH,
@@ -22,18 +22,21 @@ class Director:
             title=const.TITLE
         )
 
-        self.scenes = []
-        self.current_scene = Scene()
+        self.scenes = {
+            'mean': None,
+            'game': GameScene(),
+        }
+        self.current_scene = GameScene()
 
     def load_scene(self):
-        self.current_scene = Scene()
+        self.current_scene = GameScene()
 
     def run(self):
         while not tcod.console_is_window_closed():
             self.current_scene.update()
 
 
-class Scene:
+class GameScene:
 
     director = None
 
@@ -41,6 +44,9 @@ class Scene:
         self.event = input.EventProcessor()
         self.level = level.Level()
         self.world = esper.World()
+
+        self.fov_recompute = True
+
         self._load_processors()
         self._load_level()
         self._load_entities()
@@ -48,7 +54,7 @@ class Scene:
     def _load_processors(self):
         processors = (
             processor.FOV(),
-            processor.Render(self.director.root_console),
+            processor.Render(),
             processor.Movement(),
             processor.Console()
         )
@@ -70,10 +76,7 @@ class Scene:
 
     def update(self):
         self.event.process()
-        self.world.process(
-            self.event,
-            self.level.game_map
-        )
+        self.world.process()
 
 
 if __name__ == '__main__':

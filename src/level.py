@@ -332,7 +332,7 @@ class Level:
 
         # remove wall with no roof
         wall_with_no_roof = (char == 1)[1:-1, 1:-1] & (char == 0)[0:-2, 1:-1]
-        char[1:-1, 1:-1][wall_with_no_roof] = 247  # water
+        char[1:-1, 1:-1][wall_with_no_roof] = 249  # blooper
 
         # change number to tileset
         char[(floor[:-1] == 1)] = 249  # floor
@@ -340,14 +340,46 @@ class Level:
         char[char == 2] = 219  # roof
 
         self.game_map.walkable[:] = floor[:-1, 1:]
-        self.game_map.transparent[:] = floor[:-1, 1:] + floor[1:, 1:]
-        self.game_map.ch[:] = char[:, 1:]
+        self.game_map.walkable[char[:, 1:] == 249] = True  # blooper
+        self.game_map.transparent[:] = (
+            self.blueprint[2:-3, 3:-2] +
+            self.blueprint[3:-2, 3:-2] +
+            self.blueprint[1:-4, 3:-2]
+        )
 
+        self.game_map.ch[:] = char[:, 1:]
         self.game_map.fg[:] = (220, 220, 220)  # wall, roof, floor,  -> white fg
-        self.game_map.fg[char[:, 1:] == 247] = (0, 120, 255)  # water -> blue fg
+        # self.game_map.fg[char[:, 1:] == 247] = (0, 120, 255)  # water -> blue fg
         self.game_map.bg[:] = (30, 20, 10)  # wall, roof -> black bg
         self.game_map.bg[floor[:-1, 1:] == True] = (50, 45, 30)  # wall -> grey bg
-        self.game_map.bg[char[:, 1:] == 247] = (50, 45, 30)  # water -> grey bg
+        self.game_map.bg[char[:, 1:] == 249] = (50, 45, 30)  # blooper -> grey bg
+
+        # see south wall
+        fov_fix = (
+            (self.game_map.ch == 249)[:-3] &  # floor
+            (self.game_map.ch == 219)[1:-2] &  # roof
+            (self.game_map.ch == 176)[2:-1] &  # wall
+            (self.game_map.ch == 249)[3:]  # foor
+        )
+
+        self.game_map.transparent[1:-2] = self.game_map.transparent[1:-2] != fov_fix
+
+        # make diagonal roof not transparent (NW)
+        fov_fix2 = (
+            self.game_map.transparent[1:-1, 1:-1] &
+            (self.game_map.ch == 176)[1:-1, 1:-1] &  # wall
+            (self.game_map.ch == 219)[:-2, :-2]  # roof
+        )
+
+        # make diagonal roof not transparent (NE)
+        fov_fix3 = (
+            self.game_map.transparent[1:-1, 1:-1] &
+            (self.game_map.ch == 176)[1:-1, 1:-1] &  # wall
+            (self.game_map.ch == 219)[:-2, 2:]  # roof
+        )
+
+        self.game_map.transparent[:-2, :-2] = self.game_map.transparent[:-2, :-2] > fov_fix2
+        self.game_map.transparent[:-2, 2:] = self.game_map.transparent[:-2, 2:] > fov_fix3
 
     def place_entities(self):
         y, x = self.rooms[0].center()

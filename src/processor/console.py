@@ -10,16 +10,16 @@ class Console(esper.Processor):
     def __init__(self):
         super().__init__()
 
-    def process(self, event, *args):
+    def process(self, *args):
 
-        if event.action.get('exit'):
+        if self.scene.event.action.get('exit'):
             sys.exit()
 
-        if event.action.get('fullscreen'):
+        if self.scene.event.action.get('fullscreen'):
             tcod.console_set_fullscreen(not tcod.console_is_fullscreen())
 
-        if event.action.get('screenshot'):
+        if self.scene.event.action.get('screenshot'):
             tcod.sys_save_screenshot()
 
-        if event.action.get('change_scene'):
-            self.scene.director.change_scene()
+        if self.scene.event.action.get('change_scene'):
+            self.scene.director.load_scene()
