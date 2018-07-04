@@ -7,7 +7,6 @@ import tcod
 
 class Render(esper.Processor):
 
-    scene = None
 
     def __init__(self):
         super().__init__()
@@ -21,7 +20,7 @@ class Render(esper.Processor):
         )
 
     def process(self, *args):
-        game_map = self.scene.level.game_map
+        game_map = self.world.scene.level.game_map
         self.render_map(game_map)
         self.render_all(game_map)
         self.render_fps_counter()
@@ -30,12 +29,12 @@ class Render(esper.Processor):
         self.clear_all()
 
     def render_map(self, game_map):
-        if self.scene.event.action.get('reveal_all'):
-            self.scene.level.game_map.explored[:] = True
+        if self.world.scene.event.action.get('reveal_all'):
+            self.world.scene.level.game_map.explored[:] = True
 
         # game_map.fov[:] = True
         # self.scene.fov_recompute = True
-        if self.scene.fov_recompute:
+        if self.world.scene.fov_recompute:
 
             light_ground = (game_map.ch==249) & game_map.fov
             self.con.ch[light_ground] = game_map.ch[light_ground]
@@ -85,8 +84,8 @@ class Render(esper.Processor):
                 )
 
     def render_fps_counter(self):
-        self.scene.director.root_console.default_fg = tcod.grey
-        self.scene.director.root_console.print_(
+        self.world.scene.director.root_console.default_fg = tcod.grey
+        self.world.scene.director.root_console.print_(
             x=79, y=46,
             string=' last frame : %3d ms (%3d fps)' % (
                 tcod.sys_get_last_frame_length() * 1000.0,
@@ -94,7 +93,7 @@ class Render(esper.Processor):
             bg_blend=tcod.BKGND_NONE,
             alignment=tcod.RIGHT
         )
-        self.scene.director.root_console.print_(
+        self.world.scene.director.root_console.print_(
             x=79, y=47,
             string='elapsed : %8d ms %4.2fs' % (
                 tcod.sys_elapsed_milli(),
@@ -105,7 +104,7 @@ class Render(esper.Processor):
 
     def blit_console(self):
         self.con.blit(
-            dest=self.scene.director.root_console,
+            dest=self.world.scene.director.root_console,
             width=self.map_width,
             height=self.map_height
         )
