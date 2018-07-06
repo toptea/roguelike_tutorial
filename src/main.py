@@ -1,15 +1,56 @@
-import processor
+import processor as p
 import level
-import input
+import event
 import esper
 import tcod
 import const
-import itertools
 
 
-class Director:
+PROCESSOR_GROUP = {
+    'player_turn': [
+        p.FOV(),
+        # p.PlayerAction(),
+        p.Render(),
+        # p.Collision(),
+        # p.UnderStatus(),
+        p.MoveAttack(),
+        # p.PickUp(),
+        # p.Enter(),
+        # p.Death(),
+        # p.MessageLog(),
+        p.Console()
+    ],
+    'enemy_turn': [
+        # p.EnemyAction(),
+        p.Render(),
+        # p.Collision(),
+        # p.UnderStatus(),
+        p.MoveAttack(),
+        # p.Death(),
+        # p.MessageLog(),
+    ],
+    'show_inventory': [
+        # p.InventoryAction(),
+        # p.UseHealthItem(),
+        # p.UseStatsItem(),
+        # p.UseStatusItem(),
+        # p.Equip(),
 
-    def __init__(self):
+    ],
+    'drop_inventory': [
+        # p.InventoryAction(),
+        # p.Drop(),
+    ],
+    'target': [
+        # p.TargetAction(),
+        # p.Targeting(),
+    ],
+}
+
+
+class SceneManager:
+
+    def __init__(self, state='game'):
         tcod.console_set_custom_font(
             fontFile=const.FONT_PATH,
             flags=const.FONT_FLAG
@@ -21,94 +62,67 @@ class Director:
         )
         self.scenes = {
             'menu': None,
-            'game': GameScene(),
+            'option': None,
+            'game': Game(),
         }
-        self.current_scene = GameScene()
-        GameScene.director = self
+        self.current_scene = self.scenes[state]
+        Scene.manager = self
 
-    def change_scene(self):
-        self.current_scene = self.scenes['game']
+    def change_scene(self, state):
+        self.current_scene = self.scenes[state]
 
     def randomize_scene(self):
-        self.current_scene = GameScene()
+        self.current_scene = Game()
 
     def run(self):
         while not tcod.console_is_window_closed():
             self.current_scene.update()
 
 
-class GameScene:
+class Scene:
+    manager = None
 
-    director = None
+    def update(self):
+        raise NotImplementedError
+
+
+class Game(Scene):
 
     def __init__(self):
-        self.event = input.EventProcessor()
-
-        self.level = level.Level()
-        self.level.make_blueprint()
-        self.level.make_map()
-        self.level.place_entities()
-
-        self.world = GameWorld()
-        self.world.create_all_entities(self.level)
-
+        self.world = esper.World()
+        self.event = event.EventProcessor()
+        self.processor_group = PROCESSOR_GROUP
         self.fov_recompute = True
-        GameWorld.scene = self
+        self.game_map = None
+
+        self.change_processors('player_turn')
+        self._create_level()
+
+    def _create_level(self):
+        lvl = level.Level()
+        lvl.make_blueprint()
+        lvl.make_map()
+        lvl.place_entities()
+
+        for entity in lvl.entities:
+            if len(entity) <= 1:
+                self.world.create_entity(entity)
+            else:
+                self.world.create_entity(*entity)
+
+        self.game_map = lvl.game_map
+
+    def change_processors(self, state):
+        self.world._processors = self.processor_group[state]
+        for processor_instance in self.processor_group[state]:
+            processor_instance.world = self.world
+            processor_instance.scene = self
 
     def update(self):
         self.event.process()
         self.world.process()
 
 
-class GameWorld(esper.World):
-
-    scene = None
-
-    def __init__(self):
-        super().__init__()
-        self._define_processors()
-        self._define_world_reference()
-        self._processors = self.processors['player_turn']
-
-    def _define_processors(self):
-        self.processors = {
-            'player_turn': [
-                processor.FOV(),
-                processor.Render(),
-                processor.Movement(),
-                processor.Console()
-            ],
-            'enemy_turn': [
-
-            ],
-            'show_inventory': [
-
-            ],
-            'drop_inventory': [
-
-            ],
-            'target': [
-
-            ],
-        }
-
-    def _define_world_reference(self):
-        nested_processors = [p for p in self.processors.values()]
-        unique_processors = set(itertools.chain.from_iterable(nested_processors))
-        for processor_instance in unique_processors:
-            processor_instance.world = self
-
-    def create_all_entities(self, level):
-        for entity in level.entities:
-            if len(entity) <= 1:
-                self.create_entity(entity)
-            else:
-                self.create_entity(*entity)
-
-    def change_processors(self, state):
-        self._processors = self.processors[state]
-
-
 if __name__ == '__main__':
-    game = Director()
-    game.run()
+    app = SceneManager(state='game')
+    app.run()

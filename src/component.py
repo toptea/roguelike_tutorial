@@ -1,37 +1,18 @@
 from dataclasses import dataclass
+# from util import autoslots
 import tcod
-import esper
-
-
-@dataclass
-class IsPlayer:
-    pass
-
-
-@dataclass
-class EnemyAI:
-    pass
 
 
 @dataclass
 class Position:
     x: int
     y: int
-    blocks: bool = True
-
-
-@dataclass
-class Fighter:
-    max_hp: int
-    hp: int
-    defense: int
-    power: int
 
 
 @dataclass
 class Velocity:
-    dx: int
-    dy: int
+    dx: int = 0
+    dy: int = 0
 
 
 @dataclass
@@ -50,59 +31,83 @@ class Collidable:
 @dataclass
 class Describable:
     name: str
+    desc: str
 
 
-class FOV(esper.Processor):
+@dataclass
+class IsPlayer:
     pass
 
 
-class PlayerAction(esper.Processor):
+@dataclass
+class IsHostile:
     pass
 
 
-class PlayerShowInventoryAction(esper.Processor):
+@dataclass
+class Consumable:
     pass
 
 
-class PlayerDropInventoryAction(esper.Processor):
+@dataclass
+class Carryable:
     pass
 
 
-class PlayerTargetingAction(esper.Processor):
+@dataclass
+class Wearable:
     pass
 
 
-class EnemyAction(esper.Processor):
+@dataclass
+class Aimable:
     pass
 
 
-class ConsoleAction(esper.Processor):
+@dataclass
+class Enterable:
     pass
 
 
-class Render(esper.Processor):
-    pass
+@dataclass
+class Health:
+    max_hp: int
+    current_hp: int
 
 
-class MoveAttack(esper.Processor):
-    pass
+@dataclass
+class Stats:
+    defense: int
+    power: int
 
 
-class Collision(esper.Processor):
-    pass
+@dataclass
+class Status:
+    confuse: bool = False
+    paralyse: bool = False
+    sleep: bool = False
+    poison: bool = False
 
 
-class Pickup(esper.Processor):
-    pass
+@dataclass
+class HealthModifier:
+    delta_hp: int
 
 
-class MessageLog(esper.Processor):
-    pass
+@dataclass
+class HealthModifier:
+    delta_hp: int
 
 
-class StateManager(esper.Processor):
-    pass
+@dataclass
+class StatsModifier:
+    delta_defense: int
+    delta_power: int
 
 
-class GameOver(esper.Processor):
-    pass
+@dataclass
+class StatusModifier:
+    confuse: bool = False
+    paralyse: bool = False
+    sleep: bool = False
+    poison: bool = False

@@ -3,12 +3,6 @@ import tcod
 
 
 @dataclass
-class Event:
-    action: dict = None
-    fov_recompute: bool = True
-
-
-@dataclass
 class Key:
     vk: int = 65
     ch: str = chr(0)
