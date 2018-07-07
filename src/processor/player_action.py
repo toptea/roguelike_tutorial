@@ -1,11 +1,6 @@
 from dataclasses import dataclass
+import esper
 import tcod
-
-
-@dataclass
-class Event:
-    action: dict = None
-    fov_recompute: bool = True
 
 
 @dataclass
@@ -32,8 +27,9 @@ class Key:
         return hash(self.__key())
 
 
-class EventProcessor:
+class PlayerAction(esper.Processor):
     def __init__(self):
+        super().__init__()
         self.key = tcod.Key()
         self.mouse = tcod.Mouse()
         self.key_code = {
@@ -57,6 +53,7 @@ class EventProcessor:
             Key(vk=tcod.KEY_KP7): {'move': (-1, -1)},
             Key(vk=tcod.KEY_KP8): {'move': (0, -1)},
             Key(vk=tcod.KEY_KP9): {'move': (1, -1)},
+            Key(vk=tcod.KEY_F1): {'randomize_scene': True},
             Key(vk=tcod.KEY_F5): {'reveal_all': True},
             Key(vk=tcod.KEY_F12): {'screenshot': True},
             Key(ch='a'): {},
@@ -89,7 +86,6 @@ class EventProcessor:
         }
 
     def process(self):
-
         tcod.sys_wait_for_event(
             mask=tcod.EVENT_ANY,
             k=self.key,
@@ -105,7 +101,7 @@ class EventProcessor:
             shift=self.key.shift, pressed=self.key.pressed,
         )
 
-        if tcod.EVENT_KEY and user_input in self.key_code:
-            return self.key_code[user_input]
+        if tcod.EVENT_KEY_PRESS and user_input in self.key_code:
+            self.scene.action = self.key_code[user_input]
         else:
-            return {}
+            self.scene.action = {}
