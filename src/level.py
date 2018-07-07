@@ -22,7 +22,13 @@ class Room:
     def center(self):
         cx = int(np.median(self.cc))
         cy = int(np.median(self.rr))
-        return cy, cx,
+        return cy, cx
+
+    def random_position(self):
+        index = random.randint(0, len(self.rr)-1)
+        y = self.rr[index]
+        x = self.cc[index]
+        return y, x
 
     def intersect(self, other):
         return (
@@ -382,8 +388,15 @@ class Level:
         self.game_map.transparent[:-2, 2:] = self.game_map.transparent[:-2, 2:] > fov_fix3
 
     def place_entities(self):
-        y, x = self.rooms[0].center()
+        while True:
+            y, x = self.rooms[0].random_position()
+            if self.game_map.walkable[y, x]:
+                break
+
         self.entities.append(entity.player(x, y))
         for i in range(1, self.max_rooms):
-            y, x = self.rooms[i].center()
+            while True:
+                y, x = self.rooms[i].random_position()
+                if self.game_map.walkable[y, x]:
+                    break
             self.entities.append(entity.monster('M', tcod.red, x, y))

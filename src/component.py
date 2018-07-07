@@ -30,8 +30,8 @@ class Collidable:
 
 @dataclass
 class Describable:
-    name: str
-    desc: str
+    name: str = ''
+    desc: str = ''
 
 
 @dataclass
@@ -71,14 +71,14 @@ class Enterable:
 
 @dataclass
 class Health:
-    max_hp: int
-    current_hp: int
+    max_hp: int = 30
+    current_hp: int = 30
 
 
 @dataclass
 class Stats:
-    defense: int
-    power: int
+    defense: int = 1
+    power: int = 1
 
 
 @dataclass

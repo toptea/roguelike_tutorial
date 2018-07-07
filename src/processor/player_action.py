@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import esper
 import tcod
 
 
@@ -26,11 +27,11 @@ class Key:
         return hash(self.__key())
 
 
-class EventProcessor:
+class PlayerAction(esper.Processor):
     def __init__(self):
+        super().__init__()
         self.key = tcod.Key()
         self.mouse = tcod.Mouse()
-        self.action = {}
         self.key_code = {
             Key(vk=tcod.KEY_ENTER, ch='\r', alt=True): {'fullscreen': True},
             Key(vk=tcod.KEY_ESCAPE, ch='\x1b'): {'exit': True},
@@ -85,7 +86,6 @@ class EventProcessor:
         }
 
     def process(self):
-
         tcod.sys_wait_for_event(
             mask=tcod.EVENT_ANY,
             k=self.key,
@@ -101,7 +101,7 @@ class EventProcessor:
             shift=self.key.shift, pressed=self.key.pressed,
         )
 
-        if tcod.EVENT_KEY and user_input in self.key_code:
-            self.action = self.key_code[user_input]
+        if tcod.EVENT_KEY_PRESS and user_input in self.key_code:
+            self.scene.action = self.key_code[user_input]
         else:
-            self.action = {}
+            self.scene.action = {}

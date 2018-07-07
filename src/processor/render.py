@@ -29,7 +29,7 @@ class Render(esper.Processor):
         self.clear_all()
 
     def render_map(self, game_map):
-        if self.scene.event.action.get('reveal_all'):
+        if self.scene.action.get('reveal_all'):
             self.scene.game_map.explored[:] = True
 
         # game_map.fov[:] = True

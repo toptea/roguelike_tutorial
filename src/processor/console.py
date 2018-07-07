@@ -11,14 +11,17 @@ class Console(esper.Processor):
 
     def process(self, *args):
 
-        if self.scene.event.action.get('exit'):
+        if self.scene.action.get('exit'):
             sys.exit()
 
-        if self.scene.event.action.get('fullscreen'):
+        if self.scene.action.get('fullscreen'):
             tcod.console_set_fullscreen(not tcod.console_is_fullscreen())
 
-        if self.scene.event.action.get('screenshot'):
+        if self.scene.action.get('screenshot'):
             tcod.sys_save_screenshot()
 
-        if self.scene.event.action.get('randomize_scene'):
+        if self.scene.action.get('randomize_scene'):
             self.scene.manager.randomize_scene()
+
+        if self.scene.action != {}:
+            self.scene.change_processors('enemy_turn')

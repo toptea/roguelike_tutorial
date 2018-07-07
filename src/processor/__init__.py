@@ -2,13 +2,55 @@ from .render import Render
 from .move_attack import MoveAttack
 from .console import Console
 from .fov import FOV
+from .player_action import PlayerAction
+from .enemy_action import EnemyAction
+
+
+PROCESSOR_GROUP = {
+    'player_turn': [
+        FOV(),
+        PlayerAction(),
+        Render(),
+        # UnderStatus(),
+        MoveAttack(),
+        # PickUp(),
+        # Enter(),
+        # Death(),
+        # MessageLog(),
+        Console()
+    ],
+    'enemy_turn': [
+        EnemyAction(),
+        Render(),
+        # UnderStatus(),
+        # MoveAttack(),
+        # Death(),
+        # MessageLog(),
+    ],
+    'show_inventory': [
+        # InventoryAction(),
+        # UseHealthItem(),
+        # UseStatsItem(),
+        # UseStatusItem(),
+        # Equip(),
+
+    ],
+    'drop_inventory': [
+        # InventoryAction(),
+        # Drop(),
+    ],
+    'target': [
+        # TargetAction(),
+        # Targeting(),
+    ],
+}
 
 
 """
 # Player or Enemy Turn
 from .fov import FOV
-from .player_action import PlayerAction
-from .enemy_action import EnemyAction
+
+
 from .render import Render
 from .collision import Collision
 from .move_attack import MoveAttack
