@@ -1,6 +1,30 @@
 from dataclasses import dataclass
 # from util import autoslots
+import enum
 import tcod
+
+
+@dataclass
+class RenderOrderItem:
+    pass
+
+
+@dataclass
+class RenderOrderCorpse:
+    pass
+
+
+@dataclass
+class RenderOrderActor:
+    pass
+
+
+@dataclass
+class Renderable:
+    char: str = '@'
+    fg: tuple = (255, 255, 255)
+    bg: tuple = (0, 0, 0)
+    bg_blend: int = tcod.BKGND_NONE
 
 
 @dataclass
@@ -13,14 +37,6 @@ class Position:
 class Velocity:
     dx: int = 0
     dy: int = 0
-
-
-@dataclass
-class Renderable:
-    char: str = '@'
-    fg: tuple = (255, 255, 255)
-    bg: tuple = (0, 0, 0)
-    bg_blend: int = tcod.BKGND_NONE
 
 
 @dataclass
@@ -70,15 +86,11 @@ class Enterable:
 
 
 @dataclass
-class Health:
-    max_hp: int = 30
-    current_hp: int = 30
-
-
-@dataclass
 class Stats:
-    defense: int = 1
-    power: int = 1
+    hp: int = 30
+    max_hp: int = hp
+    defense: int = 2
+    power: int = 5
 
 
 @dataclass

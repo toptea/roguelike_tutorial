@@ -271,7 +271,6 @@ class Level:
 
             for r in self.rooms:
                 if room.intersect(r):
-                    print('intersect!')
                     break
             else:
                 self.rooms.append(room)
