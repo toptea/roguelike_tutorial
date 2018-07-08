@@ -6,27 +6,24 @@ from .event_ingame import EventInGame
 from .move_enemy import MoveEnemy
 from .message_log import MessageLog
 from .death import Death
-
+from .manage_state import ManageState
 
 PROCESSOR_GROUP = {
     'player_turn': [
-        Render(),
         FOV(),
         EventInGame(),
-        # UnderStatus(),
         MovePlayer(),
         # PickUp(),
         # Enter(),
-        Death(),
-        MessageLog(),
-        Console()
+        Console(),
+        ManageState('player_turn')
     ],
     'enemy_turn': [
         MoveEnemy(),
-        # UnderStatus(),
-        # MoveAttack(),
-        # Death(),
-        # MessageLog(),
+        Death(),
+        MessageLog(),
+        Render(),
+        ManageState('enemy_turn')
     ],
     'show_inventory': [
         # EventShowInventory(),
@@ -34,7 +31,6 @@ PROCESSOR_GROUP = {
         # UseStatsItem(),
         # UseStatusItem(),
         # Equip(),
-
     ],
     'drop_inventory': [
         # EventDropInventory(),
@@ -44,25 +40,10 @@ PROCESSOR_GROUP = {
         # TargetAction(),
         # Targeting(),
     ],
+    'game_over': [
+        EventInGame(),
+        Render(),
+        Console(),
+        ManageState('game_over')
+    ]
 }
-
-
-"""
-# Player or Enemy Turn
-from .pickup import Pickup
-from .enter import Enter
-from .death import Death
-
-
-# Show or Drop Inventory
-from .event_inventory import EventInventory
-from .use_health_item import UseHealthItem
-from .use_stats_item import UseStatsItem
-from .use_status_item import UseStatusItem
-from .equip import Equip
-from .drop import Drop
-
-# Targeting
-from .target_action import TargetAction
-from .targeting import Targeting
-"""

@@ -16,9 +16,17 @@ class Death(esper.Processor):
                 rend.char = '%'
                 rend.fg = tcod.dark_red
                 self.scene.message.append('{} is dead!'.format(desc.name.capitalize()))
-                self.world.remove_component(ent, c.Collidable)
-                self.world.remove_component(ent, c.Stats)
-                self.world.remove_component(ent, c.Velocity)
+                if self.world.has_component(ent, c.Collidable):
+                    self.world.remove_component(ent, c.Collidable)
+                if self.world.has_component(ent, c.Stats):
+                    self.world.remove_component(ent, c.Stats)
+                if self.world.has_component(ent, c.Velocity):
+                    self.world.remove_component(ent, c.Velocity)
+                if self.world.has_component(ent, c.RenderOrderActor):
+                    self.world.remove_component(ent, c.RenderOrderActor)
 
+                self.world.add_component(ent, c.RenderOrderCorpse())
 
-
+                if self.world.has_component(ent, c.IsPlayer):
+                    self.scene.change_processors('game_over')
+                    print('hello')
