@@ -1,34 +1,35 @@
 from .render import Render
-from .move_attack import MoveAttack
+from .move_player import MovePlayer
 from .console import Console
 from .fov import FOV
-from .player_action import PlayerAction
-from .enemy_action import EnemyAction
+from .event_ingame import EventInGame
+from .move_enemy import MoveEnemy
+from .message_log import MessageLog
+from .death import Death
 
 
 PROCESSOR_GROUP = {
     'player_turn': [
-        FOV(),
-        PlayerAction(),
         Render(),
+        FOV(),
+        EventInGame(),
         # UnderStatus(),
-        MoveAttack(),
+        MovePlayer(),
         # PickUp(),
         # Enter(),
-        # Death(),
-        # MessageLog(),
+        Death(),
+        MessageLog(),
         Console()
     ],
     'enemy_turn': [
-        EnemyAction(),
-        Render(),
+        MoveEnemy(),
         # UnderStatus(),
         # MoveAttack(),
         # Death(),
         # MessageLog(),
     ],
     'show_inventory': [
-        # InventoryAction(),
+        # EventShowInventory(),
         # UseHealthItem(),
         # UseStatsItem(),
         # UseStatusItem(),
@@ -36,7 +37,7 @@ PROCESSOR_GROUP = {
 
     ],
     'drop_inventory': [
-        # InventoryAction(),
+        # EventDropInventory(),
         # Drop(),
     ],
     'target': [
@@ -48,19 +49,13 @@ PROCESSOR_GROUP = {
 
 """
 # Player or Enemy Turn
-from .fov import FOV
-
-
-from .render import Render
-from .collision import Collision
-from .move_attack import MoveAttack
 from .pickup import Pickup
 from .enter import Enter
 from .death import Death
-from .message_log import MessageLog
+
 
 # Show or Drop Inventory
-from .inventory_action import InventoryAction
+from .event_inventory import EventInventory
 from .use_health_item import UseHealthItem
 from .use_stats_item import UseStatsItem
 from .use_status_item import UseStatusItem

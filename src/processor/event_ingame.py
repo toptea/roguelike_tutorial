@@ -27,7 +27,7 @@ class Key:
         return hash(self.__key())
 
 
-class PlayerAction(esper.Processor):
+class EventInGame(esper.Processor):
     def __init__(self):
         super().__init__()
         self.key = tcod.Key()

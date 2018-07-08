@@ -1,6 +1,8 @@
 import processor
 import level
 import esper
+import tcod
+import collections
 
 
 class Scene:
@@ -14,13 +16,14 @@ class Game(Scene):
 
     def __init__(self):
         self.world = esper.World()
-        self.processor_group = processor.PROCESSOR_GROUP
-        self.fov_recompute = True
         self.game_map = None
-        self.action = {}
-
-        self.change_processors('player_turn')
         self._create_level()
+        self.astar = tcod.path.AStar(self.game_map.walkable)
+        self.processor_group = processor.PROCESSOR_GROUP
+        self.change_processors('player_turn')
+        self.fov_recompute = True
+        self.message = collections.deque()
+        self.action = {}
 
     def _create_level(self):
         lvl = level.Level()
@@ -33,7 +36,6 @@ class Game(Scene):
                 self.world.create_entity(entity)
             else:
                 self.world.create_entity(*entity)
-
         self.game_map = lvl.game_map
 
     def change_processors(self, state):

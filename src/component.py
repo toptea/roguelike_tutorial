@@ -70,15 +70,11 @@ class Enterable:
 
 
 @dataclass
-class Health:
-    max_hp: int = 30
-    current_hp: int = 30
-
-
-@dataclass
 class Stats:
-    defense: int = 1
-    power: int = 1
+    hp: int = 30
+    max_hp: int = hp
+    defense: int = 2
+    power: int = 5
 
 
 @dataclass
