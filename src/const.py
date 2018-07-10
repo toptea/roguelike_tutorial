@@ -16,6 +16,9 @@ FOV_ALGORITHM = tcod.FOV_SHADOW
 FOV_LIGHT_WALLS = True
 FOV_RADIUS = 10
 
+LAYER_CORPSE = 1
+LAYER_ITEM = 2
+LAYER_ACTOR = 3
 
 COLORS = {
         'dark_wall': (0, 0, 100),

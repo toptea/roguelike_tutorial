@@ -1,22 +1,7 @@
 from dataclasses import dataclass
 # from util import autoslots
-import enum
+import const
 import tcod
-
-
-@dataclass
-class RenderOrderItem:
-    pass
-
-
-@dataclass
-class RenderOrderCorpse:
-    pass
-
-
-@dataclass
-class RenderOrderActor:
-    pass
 
 
 @dataclass
@@ -25,6 +10,7 @@ class Renderable:
     fg: tuple = (255, 255, 255)
     bg: tuple = (0, 0, 0)
     bg_blend: int = tcod.BKGND_NONE
+    layer: int = const.LAYER_ACTOR
 
 
 @dataclass
@@ -34,9 +20,8 @@ class Position:
 
 
 @dataclass
-class Velocity:
-    dx: int = 0
-    dy: int = 0
+class Movable:
+    pass
 
 
 @dataclass
@@ -88,7 +73,7 @@ class Enterable:
 @dataclass
 class Stats:
     hp: int = 30
-    max_hp: int = hp
+    max_hp: int = 30
     defense: int = 2
     power: int = 5
 

@@ -5,10 +5,10 @@ import esper
 import tcod
 
 
-class Render(esper.Processor):
+class RenderProcessor(esper.Processor):
     scene = None
 
-    def __init__(self, show_hp=True):
+    def __init__(self):
         super().__init__()
 
         self.map_width = const.MAP_WIDTH
@@ -19,12 +19,26 @@ class Render(esper.Processor):
             height=self.map_height
         )
 
+
+class Render(RenderProcessor):
+    scene = None
+
+    def __init__(self):
+        super().__init__()
+        """
+        self.map_width = const.MAP_WIDTH
+        self.map_height = const.MAP_HEIGHT
+
+        self.con = tcod.console.Console(
+            width=self.map_width,
+            height=self.map_height
+        )
+        """
+
     def process(self, *args):
         game_map = self.scene.game_map
         self.render_map(game_map)
-        self.render_entities(game_map, c.RenderOrderCorpse)
-        self.render_entities(game_map, c.RenderOrderItem)
-        self.render_entities(game_map, c.RenderOrderActor)
+        self.render_entities(game_map)
         self.render_fps_counter()
         self.render_player_hp()
         self.blit_console()
@@ -35,8 +49,6 @@ class Render(esper.Processor):
         if self.scene.action.get('reveal_all'):
             self.scene.game_map.explored[:] = True
 
-        # game_map.fov[:] = True
-        # self.scene.fov_recompute = True
         if self.scene.fov_recompute:
 
             light_ground = (game_map.ch == 249) & game_map.fov
@@ -73,9 +85,10 @@ class Render(esper.Processor):
             self.con.fg[~game_map.explored] = (15, 10, 5)
             self.con.bg[~game_map.explored] = (15, 10, 5)
 
-    def render_entities(self, game_map, render_order):
-        generator = self.world.get_components(c.Renderable, c.Position, render_order)
-        for _, (rend, pos, _) in generator:
+    def render_entities(self, game_map):
+        list_c = list(self.world.get_components(c.Renderable, c.Position))
+        list_c.sort(key=lambda row: row[1][0].layer)
+        for _, (rend, pos) in list_c:
             if game_map.fov[pos.y, pos.x]:
                 self.con.default_fg = rend.fg
                 self.con.default_bg = rend.bg

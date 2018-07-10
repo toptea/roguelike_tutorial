@@ -2,7 +2,7 @@ from .render import Render
 from .move_player import MovePlayer
 from .console import Console
 from .fov import FOV
-from .event_ingame import EventInGame
+from .input_player import InputPlayer
 from .move_enemy import MoveEnemy
 from .message_log import MessageLog
 from .death import Death
@@ -11,19 +11,20 @@ from .manage_state import ManageState
 PROCESSOR_GROUP = {
     'player_turn': [
         FOV(),
-        EventInGame(),
+        Render(),
+        InputPlayer(),
         MovePlayer(),
-        # PickUp(),
-        # Enter(),
-        Console(),
-        ManageState('player_turn')
-    ],
-    'enemy_turn': [
         MoveEnemy(),
         Death(),
         MessageLog(),
-        Render(),
-        ManageState('enemy_turn')
+        Console(),
+
+        # PickUp(),
+        # Enter(),
+        # ManageState('player_turn')
+    ],
+    'enemy_turn': [
+        # ManageState('enemy_turn')
     ],
     'show_inventory': [
         # EventShowInventory(),
@@ -40,10 +41,4 @@ PROCESSOR_GROUP = {
         # TargetAction(),
         # Targeting(),
     ],
-    'game_over': [
-        EventInGame(),
-        Render(),
-        Console(),
-        ManageState('game_over')
-    ]
 }
