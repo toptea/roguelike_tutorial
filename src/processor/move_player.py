@@ -1,6 +1,6 @@
 import component as c
-
 import esper
+import tcod
 
 
 class MovePlayer(esper.Processor):
@@ -10,62 +10,67 @@ class MovePlayer(esper.Processor):
         super().__init__()
 
     def process(self, *args):
-        move = self.scene.action.get('move')
-        if move:
-            # apply velocity to player
-            gen_c = self.world.get_components(
+        if self.scene.action.get('move'):
+            player_c = self.world.get_components(
                 c.IsPlayer,
-                c.Position,
-                c.Velocity,
-                c.Describable,
-                c.Stats
-            )
-            player, (_, player_pos, player_vel, player_desc, player_stats) = next(gen_c)
-            player_vel.dx, player_vel.dy = move
-
-            # no velocity to player if there's a wall ahead
-            new_x = player_pos.x + player_vel.dx
-            new_y = player_pos.y + player_vel.dy
-            if not self.scene.game_map.walkable[new_y, new_x]:
-                player_vel.dx, player_vel.dy = 0, 0
-                return None
-
-            # check for collision on other entities
-            gen_c = self.world.get_components(
-                c.Collidable,
+                c.Movable,
                 c.Position,
                 c.Describable,
                 c.Stats
             )
-            for other_ent, (_, other_pos, other_desc, other_stats) in gen_c:
-                b1 = player != other_ent
-                b2 = new_x == other_pos.x
-                b3 = new_y == other_pos.y
-                if b1 and b2 and b3:
-                    damage = player_stats.power - other_stats.defense
+            for player, (_, _, player_pos, player_desc, player_stats) in player_c:
+                new_x = player_pos.x + self.scene.action.get('move')[0]
+                new_y = player_pos.y + self.scene.action.get('move')[1]
 
-                    if damage > 0:
-                        other_stats.hp -= damage
-                        self.scene.message.append(
+                # check for collision on map
+                if not self.scene.game_map.walkable[new_y, new_x]:
+                    break
+
+                # check for collision on other entities
+                if self.collide_on_entity(player, new_x, new_y,
+                                          player_desc, player_stats):
+                    break
+
+                self.scene.fov_compute = True
+                player_pos.x = new_x
+                player_pos.y = new_y
+
+    def collide_on_entity(self, entity, new_x, new_y, desc, stats):
+        collidable_c = self.world.get_components(
+            c.Collidable,
+            c.Position,
+            c.Describable,
+            c.Stats
+        )
+        is_collided = False
+        for other_entity, (_, other_pos, other_desc, other_stats) in collidable_c:
+            b1 = entity != other_entity
+            b2 = new_x == other_pos.x
+            b3 = new_y == other_pos.y
+            if b1 and b2 and b3:
+                is_collided = True
+                damage = stats.power - other_stats.defense
+
+                if damage > 0:
+                    other_stats.hp -= damage
+                    self.scene.message.append(
+                        (
                             '{0} attacks {1} for {2} hit points.'.format(
-                                player_desc.name.capitalize(),
+                                desc.name.capitalize(),
                                 other_desc.name,
-                                str(damage)
-                            )
+                                str(damage),
+                            ),
+                            tcod.white
                         )
-                    else:
-                        self.scene.message.append(
+                    )
+                else:
+                    self.scene.message.append(
+                        (
                             '{0} attacks {1} but does no damage.'.format(
-                                player_desc.name.capitalize(),
+                                desc.name.capitalize(),
                                 other_desc.name
-                            )
+                            ),
+                            tcod.white
                         )
-                    player_vel.dx, player_vel.dy = 0, 0
-                    return None
-
-            # set player new x,y position
-            player_pos.x += player_vel.dx
-            player_pos.y += player_vel.dy
-            player_vel.dx, player_vel.dy = 0, 0
-            self.scene.fov_compute = True
-
+                    )
+        return is_collided

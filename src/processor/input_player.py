@@ -27,7 +27,7 @@ class Key:
         return hash(self.__key())
 
 
-class EventInGame(esper.Processor):
+class InputPlayer(esper.Processor):
     def __init__(self):
         super().__init__()
         self.key = tcod.Key()
@@ -105,3 +105,5 @@ class EventInGame(esper.Processor):
             self.scene.action = self.key_code[user_input]
         else:
             self.scene.action = {}
+
+        self.scene.mouse = self.mouse

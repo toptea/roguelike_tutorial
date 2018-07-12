@@ -1,22 +1,6 @@
-from dataclasses import dataclass
-# from util import autoslots
-import enum
+from dataclasses import dataclass, fields
+import const
 import tcod
-
-
-@dataclass
-class RenderOrderItem:
-    pass
-
-
-@dataclass
-class RenderOrderCorpse:
-    pass
-
-
-@dataclass
-class RenderOrderActor:
-    pass
 
 
 @dataclass
@@ -25,6 +9,7 @@ class Renderable:
     fg: tuple = (255, 255, 255)
     bg: tuple = (0, 0, 0)
     bg_blend: int = tcod.BKGND_NONE
+    layer: int = const.LAYER_ACTOR
 
 
 @dataclass
@@ -34,9 +19,8 @@ class Position:
 
 
 @dataclass
-class Velocity:
-    dx: int = 0
-    dy: int = 0
+class Movable:
+    pass
 
 
 @dataclass
@@ -88,7 +72,7 @@ class Enterable:
 @dataclass
 class Stats:
     hp: int = 30
-    max_hp: int = hp
+    max_hp: int = 30
     defense: int = 2
     power: int = 5
 
@@ -123,3 +107,20 @@ class StatusModifier:
     paralyse: bool = False
     sleep: bool = False
     poison: bool = False
+
+
+# https://github.com/ericvsmith/dataclasses/blob/master/dataclass_tools.py
+# def autoslots(cls):
+#     if '__slots__' in cls.__dict__:
+#         raise TypeError(f'{cls.__name__} already specifies __slots__')
+#     cls_dict = dict(cls.__dict__)
+#     field_names = tuple(f.name for f in fields(cls))
+#     cls_dict['__slots__'] = field_names
+#     for field_name in field_names:
+#         cls_dict.pop(field_name, None)
+#     cls_dict.pop('__dict__', None)
+#     qualname = getattr(cls, '__qualname__', None)
+#     cls = type(cls)(cls.__name__, cls.__bases__, cls_dict)
+#     if qualname is not None:
+#         cls.__qualname__ = qualname
+#     return cls

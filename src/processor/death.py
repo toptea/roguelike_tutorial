@@ -1,5 +1,5 @@
 import component as c
-
+import const
 import esper
 import tcod
 
@@ -15,18 +15,19 @@ class Death(esper.Processor):
             if stats.hp <= 0:
                 rend.char = '%'
                 rend.fg = tcod.dark_red
-                self.scene.message.append('{} is dead!'.format(desc.name.capitalize()))
-                if self.world.has_component(ent, c.Collidable):
-                    self.world.remove_component(ent, c.Collidable)
-                if self.world.has_component(ent, c.Stats):
-                    self.world.remove_component(ent, c.Stats)
-                if self.world.has_component(ent, c.Velocity):
-                    self.world.remove_component(ent, c.Velocity)
-                if self.world.has_component(ent, c.RenderOrderActor):
-                    self.world.remove_component(ent, c.RenderOrderActor)
+                rend.layer = const.LAYER_CORPSE
+                self.scene.message.append(
+                    (
+                        '{} is dead!'.format(desc.name.capitalize()),
+                        tcod.orange
+                    )
+                )
 
-                self.world.add_component(ent, c.RenderOrderCorpse())
+                self.try_removing(ent, c.Collidable)
+                self.try_removing(ent, c.Stats)
+                self.try_removing(ent, c.Movable)
+                self.try_removing(ent, c.IsPlayer)
 
-                if self.world.has_component(ent, c.IsPlayer):
-                    self.scene.change_processors('game_over')
-                    print('hello')
+    def try_removing(self, entity, component):
+        if self.world.has_component(entity, component):
+            self.world.remove_component(entity, component)
