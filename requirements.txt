@@ -1,0 +1,7 @@
+scikit-image
+dataclasses
+numpy
+esper
+tdl==5.0.1
+
+# tcod pathfinding x and y coordinates are reversed

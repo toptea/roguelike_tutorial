@@ -105,3 +105,5 @@ class InputPlayer(esper.Processor):
             self.scene.action = self.key_code[user_input]
         else:
             self.scene.action = {}
+
+        self.scene.mouse = self.mouse

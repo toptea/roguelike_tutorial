@@ -1,23 +1,34 @@
-from .render import Render
-from .move_player import MovePlayer
-from .console import Console
-from .fov import FOV
+from .render_entity import RenderEntity, ClearEntity
+from .render_message import RenderMessage
+from .render_reset import RenderReset
+from .render_map import RenderMap
+from .render_ui import RenderUI
+
+from .input_console import InputConsole
 from .input_player import InputPlayer
+from .move_player import MovePlayer
 from .move_enemy import MoveEnemy
-from .message_log import MessageLog
+
 from .death import Death
-from .manage_state import ManageState
+from .fov import FOV
+
 
 PROCESSOR_GROUP = {
     'player_turn': [
         FOV(),
-        Render(),
+        RenderMap(),
+        RenderEntity(),
+        RenderUI(),
+        RenderMessage(),
+        RenderReset(),
+        ClearEntity(),
+
         InputPlayer(),
+        InputConsole(),
+
         MovePlayer(),
         MoveEnemy(),
         Death(),
-        MessageLog(),
-        Console(),
 
         # PickUp(),
         # Enter(),

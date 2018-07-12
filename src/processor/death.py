@@ -16,7 +16,12 @@ class Death(esper.Processor):
                 rend.char = '%'
                 rend.fg = tcod.dark_red
                 rend.layer = const.LAYER_CORPSE
-                self.scene.message.append('{} is dead!'.format(desc.name.capitalize()))
+                self.scene.message.append(
+                    (
+                        '{} is dead!'.format(desc.name.capitalize()),
+                        tcod.orange
+                    )
+                )
 
                 self.try_removing(ent, c.Collidable)
                 self.try_removing(ent, c.Stats)

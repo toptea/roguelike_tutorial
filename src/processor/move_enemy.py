@@ -2,6 +2,7 @@ import component as c
 
 import esper
 import math
+import tcod
 
 
 class MoveEnemy(esper.Processor):
@@ -17,21 +18,21 @@ class MoveEnemy(esper.Processor):
     def move_enemies(self):
         gen_c = self.world.get_components(
             c.IsPlayer,
-            c.Position,
             c.Movable,
+            c.Position,
             c.Describable,
             c.Stats
         )
-        for player, (_, player_pos, _, player_desc, player_stats) in gen_c:
+        for player, (_, _, player_pos, player_desc, player_stats) in gen_c:
 
             gen_c = self.world.get_components(
                 c.IsHostile,
-                c.Position,
                 c.Movable,
+                c.Position,
                 c.Describable,
                 c.Stats
             )
-            for enemy, (_, enemy_pos, _, enemy_desc, enemy_stats) in gen_c:
+            for enemy, (_, _, enemy_pos, enemy_desc, enemy_stats) in gen_c:
 
                 # if enemy is within range, move towards the player
                 if self.find_distance(player_pos, enemy_pos) <= 5:
@@ -44,20 +45,25 @@ class MoveEnemy(esper.Processor):
                         if damage > 0:
                             player_stats.hp -= damage
                             self.scene.message.append(
-                                '{0} attacks {1} for {2} hit points.'.format(
-                                    enemy_desc.name.capitalize(),
-                                    player_desc.name,
-                                    str(damage)
+                                (
+                                    '{0} attacks {1} for {2} hit points.'.format(
+                                        enemy_desc.name.capitalize(),
+                                        player_desc.name,
+                                        str(damage)
+                                    ),
+                                    tcod.white
                                 )
                             )
                         else:
                             self.scene.message.append(
-                                '{0} attacks {1} but does no damage.'.format(
-                                    enemy_desc.name.capitalize(),
-                                    player_desc.name
+                                (
+                                    '{0} attacks {1} but does no damage.'.format(
+                                        enemy_desc.name.capitalize(),
+                                        player_desc.name
+                                    ),
+                                    tcod.white
                                 )
                             )
-                        # self.scene.message.append('{} insults you!'.format(enemy_desc.name))
                         return None
 
                     # check for collision on other entities
