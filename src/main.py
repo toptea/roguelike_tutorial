@@ -77,7 +77,6 @@ class Game(Scene):
         lvl.make_blueprint()
         lvl.make_map()
         lvl.place_entities()
-        print(lvl.entities)
 
         for entity in lvl.entities:
             if len(entity) <= 1:

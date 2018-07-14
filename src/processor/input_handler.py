@@ -28,6 +28,8 @@ class Key:
 
 
 class InputPlayer(esper.Processor):
+    scene = None
+
     def __init__(self):
         super().__init__()
         self.key = tcod.Key()
@@ -107,3 +109,24 @@ class InputPlayer(esper.Processor):
             self.scene.action = {}
 
         self.scene.mouse = self.mouse
+
+
+class InputInventory(esper.Processor):
+    scene = None
+
+    def __init__(self):
+        super().__init__()
+        self.key = tcod.Key()
+
+    def process(self):
+        index = self.key.c - ord('a')
+
+        if index >= 0:
+            self.scene.action = {'inventory_index': index}
+
+        if self.key.vk == tcod.KEY_ENTER and self.key.lalt:
+            self.scene.action = {'fullscreen': True}
+        elif self.key.vk == tcod.KEY_ESCAPE:
+            self.scene.action = {'exit': True}
+        else:
+            self.scene.action = {}

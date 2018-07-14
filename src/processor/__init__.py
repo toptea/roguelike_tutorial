@@ -4,11 +4,11 @@ from .render_reset import RenderReset
 from .render_map import RenderMap
 from .render_ui import RenderUI
 
-from .input_console import InputConsole
-from .input_player import InputPlayer
+from .input_handler import InputPlayer, InputInventory
 from .move_player import MovePlayer
 from .move_enemy import MoveEnemy
-
+from .console import InputConsole
+from .pickup import PickUp
 from .death import Death
 from .fov import FOV
 
@@ -36,7 +36,7 @@ PROCESSOR_GROUP = {
         InputConsole(),
         MovePlayer(),
         Death(),
-        # PickUp(),
+        PickUp(),
         # Enter(),
         StatePlayerTurn()
     ],
@@ -46,7 +46,7 @@ PROCESSOR_GROUP = {
         StateEnemyTurn(),
     ],
     'show_inventory': [
-        # EventShowInventory(),
+        InputInventory(),
         # UseHealthItem(),
         # UseStatsItem(),
         # UseStatusItem(),
@@ -54,7 +54,7 @@ PROCESSOR_GROUP = {
         StateShowInventory()
     ],
     'drop_inventory': [
-        # EventDropInventory(),
+        InputInventory(),
         # Drop(),
         StateDropInventory()
     ],
