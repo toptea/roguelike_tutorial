@@ -53,8 +53,7 @@ class Game(Scene):
         self.astar = tcod.path.AStar(self.game_map.walkable)
 
         self.processor_group = processor.PROCESSOR_GROUP
-        self.state = 'player_turn'
-        self.change_processors(self.state)
+        self.change_processors('render_all')
 
         self.fov_recompute = True
         self.message = collections.deque()
@@ -78,6 +77,7 @@ class Game(Scene):
         lvl.make_blueprint()
         lvl.make_map()
         lvl.place_entities()
+        print(lvl.entities)
 
         for entity in lvl.entities:
             if len(entity) <= 1:
@@ -87,7 +87,6 @@ class Game(Scene):
         self.game_map = lvl.game_map
 
     def change_processors(self, state):
-        self.state = state
         self.world._processors = self.processor_group[state]
         for processor_instance in self.processor_group[state]:
             processor_instance.world = self.world

@@ -12,9 +12,16 @@ from .move_enemy import MoveEnemy
 from .death import Death
 from .fov import FOV
 
+from .state import (
+    StateRenderTurn,
+    StateEnemyTurn,
+    StatePlayerTurn,
+    StateShowInventory,
+    StateDropInventory
+)
 
 PROCESSOR_GROUP = {
-    'player_turn': [
+    'render_all': [
         FOV(),
         RenderMap(),
         RenderEntity(),
@@ -22,20 +29,21 @@ PROCESSOR_GROUP = {
         RenderMessage(),
         RenderReset(),
         ClearEntity(),
-
+        StateRenderTurn()
+    ],
+    'player_turn': [
         InputPlayer(),
         InputConsole(),
-
         MovePlayer(),
-        MoveEnemy(),
         Death(),
-
         # PickUp(),
         # Enter(),
-        # ManageState('player_turn')
+        StatePlayerTurn()
     ],
     'enemy_turn': [
-        # ManageState('enemy_turn')
+        MoveEnemy(),
+        Death(),
+        StateEnemyTurn(),
     ],
     'show_inventory': [
         # EventShowInventory(),
@@ -43,10 +51,12 @@ PROCESSOR_GROUP = {
         # UseStatsItem(),
         # UseStatusItem(),
         # Equip(),
+        StateShowInventory()
     ],
     'drop_inventory': [
         # EventDropInventory(),
         # Drop(),
+        StateDropInventory()
     ],
     'target': [
         # TargetAction(),

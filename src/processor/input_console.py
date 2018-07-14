@@ -24,5 +24,3 @@ class InputConsole(esper.Processor):
 
         if self.scene.action.get('randomize_scene'):
             self.scene.manager.randomize_scene()
-
-

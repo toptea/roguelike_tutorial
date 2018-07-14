@@ -86,19 +86,10 @@ class Status:
 
 
 @dataclass
-class HealthModifier:
-    delta_hp: int
-
-
-@dataclass
-class HealthModifier:
-    delta_hp: int
-
-
-@dataclass
 class StatsModifier:
-    delta_defense: int
-    delta_power: int
+    hp: int = 0
+    delta_defense: int = 0
+    delta_power: int = 0
 
 
 @dataclass

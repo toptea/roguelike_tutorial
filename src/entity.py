@@ -1,4 +1,6 @@
 import component as c
+import const
+import tcod
 
 
 def player(x, y):
@@ -22,4 +24,15 @@ def monster(char, fg, x, y):
         c.Collidable(),
         c.Describable(name='monster'),
         c.Stats(hp=10, defense=0, power=3),
+    )
+
+
+def healing_potion(x, y):
+    return (
+        c.Position(x=x, y=y),
+        c.Renderable(char='!', fg=tcod.fuchsia, layer=const.LAYER_ITEM),
+        c.Describable(name='healing potion'),
+        c.Carryable(),
+        c.Consumable(),
+        c.StatsModifier(hp=10)
     )

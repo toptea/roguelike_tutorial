@@ -18,7 +18,6 @@ class RenderMessage(esper.Processor):
         while self.scene.message:
             message, color = self.scene.message.popleft()
             new_msg_lines = textwrap.wrap(message, self.width)
-            print(message)
 
             for line in new_msg_lines:
                 if len(self.display_message) == self.height:

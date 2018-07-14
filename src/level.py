@@ -398,4 +398,5 @@ class Level:
                 y, x = self.rooms[i].random_position()
                 if self.game_map.walkable[y, x]:
                     break
-            self.entities.append(entity.monster('M', tcod.red, x, y))
+            # self.entities.append(entity.monster('M', tcod.red, x, y))
+            self.entities.append(entity.healing_potion(x, y))
