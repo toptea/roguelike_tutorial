@@ -387,16 +387,31 @@ class Level:
         self.game_map.transparent[:-2, 2:] = self.game_map.transparent[:-2, 2:] > fov_fix3
 
     def place_entities(self):
+
         while True:
             y, x = self.rooms[0].random_position()
             if self.game_map.walkable[y, x]:
                 break
-
         self.entities.append(entity.player(x, y))
-        for i in range(1, self.max_rooms):
-            while True:
-                y, x = self.rooms[i].random_position()
-                if self.game_map.walkable[y, x]:
-                    break
-            # self.entities.append(entity.monster('M', tcod.red, x, y))
-            self.entities.append(entity.healing_potion(x, y))
+
+        for room in range(1, self.max_rooms):
+            num_monster = np.random.randint(0, const.MAX_MONSTERS_PER_ROOM)
+            num_item = np.random.randint(0, const.MAX_ITEMS_PER_ROOM)
+            valid_pos = []
+            for _ in range(num_monster + num_item):
+
+                while True:
+
+                    y, x = self.rooms[room].random_position()
+                    if self.game_map.walkable[y, x]:
+                        valid_pos.append((x, y))
+                        break
+
+            if len(valid_pos) != 0:
+                for _ in range(num_monster):
+                    x, y = valid_pos.pop()
+                    self.entities.append(entity.monster('M', tcod.red, x, y))
+
+                for _ in range(num_item):
+                    x, y = valid_pos.pop()
+                    self.entities.append(entity.healing_potion(x, y))

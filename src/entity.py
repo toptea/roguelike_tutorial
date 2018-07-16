@@ -11,7 +11,8 @@ def player(x, y):
         c.Renderable('@'),
         c.Collidable(),
         c.Describable(name='player'),
-        c.Stats(max_hp=30, hp=30, defense=2, power=5),
+        c.Stats(max_hp=30, hp=15, defense=2, power=5),
+        c.Inventory([]),
     )
 
 

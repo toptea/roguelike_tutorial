@@ -117,16 +117,25 @@ class InputInventory(esper.Processor):
     def __init__(self):
         super().__init__()
         self.key = tcod.Key()
+        self.mouse = tcod.Mouse()
 
     def process(self):
-        index = self.key.c - ord('a')
+        tcod.sys_wait_for_event(
+            mask=tcod.EVENT_ANY,
+            k=self.key,
+            m=self.mouse,
+            flush=False
+        )
 
-        if index >= 0:
-            self.scene.action = {'inventory_index': index}
+        if tcod.EVENT_KEY_PRESS and self.key.pressed:
+            index = self.key.c - ord('a')
+            if index >= 0:
+                self.scene.action = {'inventory_index': str(index)}
+            elif self.key.vk == tcod.KEY_ENTER and self.key.lalt:
+                self.scene.action = {'fullscreen': True}
+            elif self.key.vk == tcod.KEY_ESCAPE:
+                self.scene.action = {'exit': True}
+            else:
+                self.scene.action = {}
 
-        if self.key.vk == tcod.KEY_ENTER and self.key.lalt:
-            self.scene.action = {'fullscreen': True}
-        elif self.key.vk == tcod.KEY_ESCAPE:
-            self.scene.action = {'exit': True}
-        else:
-            self.scene.action = {}
+

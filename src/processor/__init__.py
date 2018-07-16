@@ -1,10 +1,14 @@
+from .render_reset import RenderBlitPanel, RenderBlitConsole, FlushConsole
+from .render_inventory import RenderShowInventory, RenderDropInventory
 from .render_entity import RenderEntity, ClearEntity
 from .render_message import RenderMessage
-from .render_reset import RenderReset
 from .render_map import RenderMap
 from .render_ui import RenderUI
 
+
 from .input_handler import InputPlayer, InputInventory
+from .drop_item import DropItem
+from .use_item import UseItem
 from .move_player import MovePlayer
 from .move_enemy import MoveEnemy
 from .console import InputConsole
@@ -20,6 +24,7 @@ from .state import (
     StateDropInventory
 )
 
+
 PROCESSOR_GROUP = {
     'render_all': [
         FOV(),
@@ -27,7 +32,9 @@ PROCESSOR_GROUP = {
         RenderEntity(),
         RenderUI(),
         RenderMessage(),
-        RenderReset(),
+        RenderBlitPanel(),
+        RenderBlitConsole(),
+        FlushConsole(),
         ClearEntity(),
         StateRenderTurn()
     ],
@@ -46,16 +53,25 @@ PROCESSOR_GROUP = {
         StateEnemyTurn(),
     ],
     'show_inventory': [
+        RenderUI(),
+        RenderMessage(),
+        RenderShowInventory(),
+        RenderBlitPanel(),
+        FlushConsole(),
+
         InputInventory(),
-        # UseHealthItem(),
-        # UseStatsItem(),
-        # UseStatusItem(),
-        # Equip(),
+        UseItem(),
         StateShowInventory()
     ],
     'drop_inventory': [
+        RenderUI(),
+        RenderMessage(),
+        RenderDropInventory(),
+        RenderBlitPanel(),
+        FlushConsole(),
+
         InputInventory(),
-        # Drop(),
+        DropItem(),
         StateDropInventory()
     ],
     'target': [

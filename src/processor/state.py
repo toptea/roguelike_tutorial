@@ -47,7 +47,11 @@ class StateShowInventory(esper.Processor):
         super().__init__()
 
     def process(self, *args):
-        self.scene.change_processors('render_all')
+        if self.scene.action != {}:
+            if self.scene.action.get('exit'):
+                self.scene.change_processors('render_all')
+            else:
+                self.scene.change_processors('show_inventory')
 
 
 class StateDropInventory(esper.Processor):
@@ -57,4 +61,8 @@ class StateDropInventory(esper.Processor):
         super().__init__()
 
     def process(self, *args):
-        self.scene.change_processors('render_all')
+        if self.scene.action != {}:
+            if self.scene.action.get('exit'):
+                self.scene.change_processors('render_all')
+            else:
+                self.scene.change_processors('drop_inventory')
