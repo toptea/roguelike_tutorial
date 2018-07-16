@@ -35,6 +35,12 @@ class Describable:
 
 
 @dataclass
+class Inventory:
+    items: list
+    capacity: int = 2
+
+
+@dataclass
 class IsPlayer:
     pass
 
@@ -86,19 +92,11 @@ class Status:
 
 
 @dataclass
-class HealthModifier:
-    delta_hp: int
-
-
-@dataclass
-class HealthModifier:
-    delta_hp: int
-
-
-@dataclass
 class StatsModifier:
-    delta_defense: int
-    delta_power: int
+    hp: int = 0
+    max_hp: int = 0
+    defense: int = 0
+    power: int = 0
 
 
 @dataclass

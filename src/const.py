@@ -23,16 +23,12 @@ FOV_ALGORITHM = tcod.FOV_SHADOW
 FOV_LIGHT_WALLS = True
 FOV_RADIUS = 10
 
+MAX_MONSTERS_PER_ROOM = 3
+MAX_ITEMS_PER_ROOM = 2
+
 LAYER_CORPSE = 1
 LAYER_ITEM = 2
 LAYER_ACTOR = 3
-
-COLORS = {
-        'dark_wall': (0, 0, 100),
-        'dark_ground': (50, 50, 150),
-        'light_wall': (130, 110, 50),
-        'light_ground': (200, 180, 50)
-    }
 
 MONSTER_COLORS = (
     tcod.red,

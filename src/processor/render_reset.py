@@ -4,19 +4,13 @@ import esper
 import tcod
 
 
-class RenderReset(esper.Processor):
+class RenderBlitPanel(esper.Processor):
     scene = None
 
     def __init__(self):
         super().__init__()
 
     def process(self, *args):
-
-        self.scene.con.blit(
-            dest=self.scene.manager.root_console,
-            width=const.MAP_WIDTH,
-            height=const.MAP_HEIGHT
-        )
 
         self.scene.panel.blit(
             dest=self.scene.manager.root_console,
@@ -32,4 +26,27 @@ class RenderReset(esper.Processor):
         )
         self.scene.panel.default_bg = tcod.black
         self.scene.panel.clear()
+
+
+class RenderBlitConsole(esper.Processor):
+    scene = None
+
+    def __init__(self):
+        super().__init__()
+
+    def process(self, *args):
+        self.scene.con.blit(
+            dest=self.scene.manager.root_console,
+            width=const.MAP_WIDTH,
+            height=const.MAP_HEIGHT
+        )
+
+
+class FlushConsole(esper.Processor):
+    scene = None
+
+    def __init__(self):
+        super().__init__()
+
+    def process(self, *args):
         tcod.console_flush()

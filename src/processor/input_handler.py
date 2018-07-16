@@ -28,6 +28,8 @@ class Key:
 
 
 class InputPlayer(esper.Processor):
+    scene = None
+
     def __init__(self):
         super().__init__()
         self.key = tcod.Key()
@@ -59,12 +61,12 @@ class InputPlayer(esper.Processor):
             Key(ch='a'): {},
             Key(ch='b'): {'move': (-1, 1)},
             Key(ch='c'): {},
-            Key(ch='d'): {},
+            Key(ch='d'): {'drop_inventory': True},
             Key(ch='e'): {},
             Key(ch='f'): {},
-            Key(ch='g'): {},
+            Key(ch='g'): {'pickup': True},
             Key(ch='h'): {'move': (-1, 0)},
-            Key(ch='i'): {},
+            Key(ch='i'): {'show_inventory': True},
             Key(ch='j'): {'move': (0, 1)},
             Key(ch='k'): {'move': (0, -1)},
             Key(ch='l'): {'move': (1, 0)},
@@ -107,3 +109,33 @@ class InputPlayer(esper.Processor):
             self.scene.action = {}
 
         self.scene.mouse = self.mouse
+
+
+class InputInventory(esper.Processor):
+    scene = None
+
+    def __init__(self):
+        super().__init__()
+        self.key = tcod.Key()
+        self.mouse = tcod.Mouse()
+
+    def process(self):
+        tcod.sys_wait_for_event(
+            mask=tcod.EVENT_ANY,
+            k=self.key,
+            m=self.mouse,
+            flush=False
+        )
+
+        if tcod.EVENT_KEY_PRESS and self.key.pressed:
+            index = self.key.c - ord('a')
+            if index >= 0:
+                self.scene.action = {'inventory_index': str(index)}
+            elif self.key.vk == tcod.KEY_ENTER and self.key.lalt:
+                self.scene.action = {'fullscreen': True}
+            elif self.key.vk == tcod.KEY_ESCAPE:
+                self.scene.action = {'exit': True}
+            else:
+                self.scene.action = {}
+
+

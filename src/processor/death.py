@@ -17,10 +17,7 @@ class Death(esper.Processor):
                 rend.fg = tcod.dark_red
                 rend.layer = const.LAYER_CORPSE
                 self.scene.message.append(
-                    (
-                        '{} is dead!'.format(desc.name.capitalize()),
-                        tcod.orange
-                    )
+                    ('{} is dead!'.format(desc.name.capitalize()), tcod.orange)
                 )
 
                 self.try_removing(ent, c.Collidable)

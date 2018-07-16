@@ -16,23 +16,24 @@ class MoveEnemy(esper.Processor):
             self.move_enemies()
 
     def move_enemies(self):
-        gen_c = self.world.get_components(
+        g_player = self.world.get_components(
             c.IsPlayer,
             c.Movable,
             c.Position,
             c.Describable,
             c.Stats
         )
-        for player, (_, _, player_pos, player_desc, player_stats) in gen_c:
 
-            gen_c = self.world.get_components(
-                c.IsHostile,
-                c.Movable,
-                c.Position,
-                c.Describable,
-                c.Stats
-            )
-            for enemy, (_, _, enemy_pos, enemy_desc, enemy_stats) in gen_c:
+        g_enemy = self.world.get_components(
+            c.IsHostile,
+            c.Movable,
+            c.Position,
+            c.Describable,
+            c.Stats
+        )
+
+        for player, (_, _, player_pos, player_desc, player_stats) in g_player:
+            for enemy, (_, _, enemy_pos, enemy_desc, enemy_stats) in g_enemy:
 
                 # if enemy is within range, move towards the player
                 if self.find_distance(player_pos, enemy_pos) <= 5:
