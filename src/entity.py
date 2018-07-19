@@ -5,7 +5,7 @@ import tcod
 
 def player(x, y):
     return (
-        c.IsPlayer(),
+        c.PlayerTurn(),
         c.Position(x=x, y=y),
         c.Movable(),
         c.Renderable('@'),
@@ -18,7 +18,7 @@ def player(x, y):
 
 def monster(char, fg, x, y):
     return (
-        c.IsHostile(),
+        c.EnemyTurn(),
         c.Position(x=x, y=y),
         c.Movable(),
         c.Renderable(char=char, fg=fg),
@@ -36,4 +36,15 @@ def healing_potion(x, y):
         c.Carryable(),
         c.Consumable(),
         c.StatsModifier(hp=10)
+    )
+
+
+def scroll(x, y):
+    return (
+        c.Position(x=x, y=y),
+        c.Renderable(char='!', fg=tcod.orange, layer=const.LAYER_ITEM),
+        c.Describable(name='fire'),
+        c.Carryable(),
+        c.Aimable(),
+        c.StatsModifier(hp=-10)
     )

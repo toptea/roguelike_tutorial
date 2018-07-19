@@ -1,16 +1,6 @@
 import esper
 
 
-class StateRenderTurn(esper.Processor):
-    scene = None
-
-    def __init__(self):
-        super().__init__()
-
-    def process(self, *args):
-        self.scene.change_processors('player_turn')
-
-
 class StatePlayerTurn(esper.Processor):
     scene = None
 
@@ -37,7 +27,7 @@ class StateEnemyTurn(esper.Processor):
         super().__init__()
 
     def process(self, *args):
-        self.scene.change_processors('render_all')
+        self.scene.change_processors('player_turn')
 
 
 class StateShowInventory(esper.Processor):
@@ -49,7 +39,7 @@ class StateShowInventory(esper.Processor):
     def process(self, *args):
         if self.scene.action != {}:
             if self.scene.action.get('exit'):
-                self.scene.change_processors('render_all')
+                self.scene.change_processors('player_turn')
             else:
                 self.scene.change_processors('show_inventory')
 
@@ -63,6 +53,6 @@ class StateDropInventory(esper.Processor):
     def process(self, *args):
         if self.scene.action != {}:
             if self.scene.action.get('exit'):
-                self.scene.change_processors('render_all')
+                self.scene.change_processors('player_turn')
             else:
                 self.scene.change_processors('drop_inventory')

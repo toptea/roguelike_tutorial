@@ -3,7 +3,7 @@ import tcod
 import sys
 
 
-class InputConsole(esper.Processor):
+class Console(esper.Processor):
     scene = None
 
     def __init__(self):

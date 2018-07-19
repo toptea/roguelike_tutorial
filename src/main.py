@@ -53,7 +53,7 @@ class Game(Scene):
         self.astar = tcod.path.AStar(self.game_map.walkable)
 
         self.processor_group = processor.PROCESSOR_GROUP
-        self.change_processors('render_all')
+        self.change_processors('player_turn')
 
         self.fov_recompute = True
         self.message = collections.deque()

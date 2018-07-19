@@ -41,12 +41,12 @@ class Inventory:
 
 
 @dataclass
-class IsPlayer:
+class PlayerTurn:
     pass
 
 
 @dataclass
-class IsHostile:
+class EnemyTurn:
     pass
 
 
