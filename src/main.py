@@ -5,11 +5,12 @@ import const
 import collections
 import esper
 import tcod
+import pickle
 
 
 class SceneManager:
 
-    def __init__(self, state='game'):
+    def __init__(self, state='menu'):
         tcod.console_set_custom_font(
             fontFile=const.FONT_PATH,
             flags=const.FONT_FLAG
@@ -33,6 +34,46 @@ class SceneManager:
     def randomize_scene(self):
         self.current_scene = Game()
 
+    def save_game(self):
+        with open('data/save/components.pickle', 'wb') as file:
+            pickle.dump(
+                obj=self.scenes['game'].world._components,
+                file=file,
+                protocol=pickle.HIGHEST_PROTOCOL
+            )
+
+        with open('data/save/entities.pickle', 'wb') as file:
+            pickle.dump(
+                obj=self.scenes['game'].world._entities,
+                file=file,
+                protocol=pickle.HIGHEST_PROTOCOL
+            )
+
+        with open('data/save/game_map.pickle', 'wb') as file:
+            pickle.dump(
+                obj=self.scenes['game'].game_map,
+                file=file,
+                protocol=pickle.HIGHEST_PROTOCOL
+            )
+
+        # np.save('game_map', self.scenes['game'].game_map)
+
+    def load_game(self):
+        with open('data/save/components.pickle', 'rb') as file:
+            components = pickle.load(file)
+
+        with open('data/save/entities.pickle', 'rb') as file:
+            entities = pickle.load(file)
+
+        with open('data/save/game_map.pickle', 'rb') as file:
+            game_map = pickle.load(file)
+
+        world = esper.World()
+        world._components = components
+        world._entities = entities
+        self.scenes['game'] = Game(world, game_map)
+        self.current_scene = self.scenes['game']
+
     def run(self):
         while not tcod.console_is_window_closed():
             self.current_scene.update()
@@ -46,14 +87,16 @@ class Scene:
 
 
 class Game(Scene):
-    def __init__(self):
-        self.world = esper.World()
-        self.game_map = None
-        self._create_level()
+    def __init__(self, world=esper.World(), game_map=None):
+        self.world = world
+        self.game_map = game_map
+        if game_map is None:
+            self._create_level()
+
         self.astar = tcod.path.AStar(self.game_map.walkable)
 
         self.processor_group = processor.PROCESSOR_GROUP
-        self.change_processors('render_all')
+        self.change_processors('player_turn')
 
         self.fov_recompute = True
         self.message = collections.deque()
@@ -96,8 +139,24 @@ class Game(Scene):
 
 
 class MainMenu(Scene):
+    def __init__(self):
+        self.world = esper.World()
+        self._add_processors()
+        self.action = {}
+
+    def _add_processors(self):
+        processors = (
+            processor.RenderTitle(),
+            processor.InputTitle(),
+            processor.Console(),
+            processor.StateTitle()
+        )
+        for num, proc in enumerate(processors):
+            self.world.add_processor(proc, priority=num)
+            proc.scene = self
+
     def update(self):
-        raise NotImplementedError
+        self.world.process()
 
 
 class Option(Scene):
@@ -106,5 +165,5 @@ class Option(Scene):
 
 
 if __name__ == '__main__':
-    app = SceneManager(state='game')
+    app = SceneManager(state='menu')
     app.run()

@@ -3,7 +3,7 @@ import tcod
 import sys
 
 
-class InputConsole(esper.Processor):
+class Console(esper.Processor):
     scene = None
 
     def __init__(self):
@@ -12,6 +12,10 @@ class InputConsole(esper.Processor):
     def process(self, *args):
 
         if self.scene.action.get('exit'):
+            sys.exit()
+
+        if self.scene.action.get('save_and_exit'):
+            self.scene.manager.save_game()
             sys.exit()
 
         if self.scene.action.get('fullscreen'):

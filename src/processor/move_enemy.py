@@ -17,7 +17,7 @@ class MoveEnemy(esper.Processor):
 
     def move_enemies(self):
         g_player = self.world.get_components(
-            c.IsPlayer,
+            c.PlayerTurn,
             c.Movable,
             c.Position,
             c.Describable,
@@ -25,7 +25,7 @@ class MoveEnemy(esper.Processor):
         )
 
         g_enemy = self.world.get_components(
-            c.IsHostile,
+            c.EnemyTurn,
             c.Movable,
             c.Position,
             c.Describable,
@@ -74,7 +74,7 @@ class MoveEnemy(esper.Processor):
                         b2 = new_x == other_pos.x
                         b3 = new_y == other_pos.y
                         if b1 and b2 and b3:
-                            self.scene.message.append('enemy bumped into each other!')
+                            self.scene.message.append(('enemy bumped into each other!', tcod.white))
                             return None
 
                     # set enemy new x,y position
