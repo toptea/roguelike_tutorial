@@ -284,7 +284,7 @@ class RenderMenu(esper.Processor, metaclass=Singleton):
         else:
             options = [item[1] for item in inventory]
 
-        self._menu(
+        _menu(
             scene=self.scene,
             header=self.header,
             options=options,
@@ -295,43 +295,82 @@ class RenderMenu(esper.Processor, metaclass=Singleton):
 
         tcod.console_flush()
 
-    @staticmethod
-    def _menu(scene, header, options, width, screen_width, screen_height):
-        if len(options) > 26:
-            raise ValueError('Cannot have a menu with more than 26 options.')
 
-        # calculate total height for the header (after auto-wrap) and one line per option
-        header_height = tcod.console_get_height_rect(scene.con, 0, 0, width, screen_height, header)
-        height = len(options) + header_height
+class RenderTitle(esper.Processor):
+    scene = None
 
-        # create an off-screen console that represents the menu's window
-        window = tcod.console_new(width, height)
-        # print the header, with auto-wrap
-        tcod.console_set_default_foreground(window, tcod.white)
-        tcod.console_print_rect_ex(window, 0, 0, width, height, tcod.BKGND_NONE, tcod.LEFT, header)
+    def __init__(self,):
+        self.image = tcod.image_load('data/menu_background.png')
+        self.title = 'TOMBS OF THE ANCIENT KINGS'
+        self.author = 'By toptea'
+        super().__init__()
 
-        # print all the options
-        y = header_height
-        letter_index = ord('a')
-        for option_text in options:
-            text = '(' + chr(letter_index) + ') ' + option_text
-            tcod.console_print_ex(window, 0, y, tcod.BKGND_NONE, tcod.LEFT, text)
-            y += 1
-            letter_index += 1
+    def process(self):
+        self.image.blit_2x(
+            self.scene.manager.root_console, 0, 0)
 
-        # blit the contents of "window" to the root console
-        x = int(screen_width / 2 - width / 2)
-        y = int(screen_height / 2 - height / 2)
-
-        window.blit(
-            dest=scene.manager.root_console,
-            dest_x=x,
-            dest_y=y,
-            src_x=0,
-            src_y=0,
-            width=width,
-            height=height,
-            fg_alpha=1.0,
-            bg_alpha=0.7,
-            key_color=None
+        self.scene.manager.root_console.default_fg = tcod.white
+        self.scene.manager.root_console.print_(
+            x=(const.SCREEN_WIDTH - len(self.title)) // 2,
+            y=const.SCREEN_HEIGHT // 2 - 4,
+            string=self.title,
         )
+
+        self.scene.manager.root_console.print_(
+            x=(const.SCREEN_WIDTH - len(self.author)) // 2,
+            y=const.SCREEN_HEIGHT - 2,
+            string=self.author,
+        )
+
+        _menu(
+            scene=self.scene,
+            header='',
+            options=['Play a new game', 'Continue last game', 'Quit'],
+            width=24,
+            screen_width=const.SCREEN_WIDTH,
+            screen_height=const.SCREEN_HEIGHT
+        )
+
+
+        tcod.console_flush()
+
+
+def _menu(scene, header, options, width, screen_width, screen_height):
+    if len(options) > 26:
+        raise ValueError('Cannot have a menu with more than 26 options.')
+
+    # calculate total height for the header (after auto-wrap) and one line per option
+    header_height = tcod.console_get_height_rect(scene.manager.root_console, 0, 0, width, screen_height, header)
+    height = len(options) + header_height
+
+    # create an off-screen console that represents the menu's window
+    window = tcod.console_new(width, height)
+    # print the header, with auto-wrap
+    tcod.console_set_default_foreground(window, tcod.white)
+    tcod.console_print_rect_ex(window, 0, 0, width, height, tcod.BKGND_NONE, tcod.LEFT, header)
+
+    # print all the options
+    y = header_height
+    letter_index = ord('a')
+    for option_text in options:
+        text = '(' + chr(letter_index) + ') ' + option_text
+        tcod.console_print_ex(window, 0, y, tcod.BKGND_NONE, tcod.LEFT, text)
+        y += 1
+        letter_index += 1
+
+    # blit the contents of "window" to the root console
+    x = int(screen_width / 2 - width / 2)
+    y = int(screen_height / 2 - height / 2)
+
+    window.blit(
+        dest=scene.manager.root_console,
+        dest_x=x,
+        dest_y=y,
+        src_x=0,
+        src_y=0,
+        width=width,
+        height=height,
+        fg_alpha=1.0,
+        bg_alpha=0.7,
+        key_color=None
+    )

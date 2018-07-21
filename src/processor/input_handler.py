@@ -36,7 +36,7 @@ class InputPlayer(esper.Processor):
         self.mouse = tcod.Mouse()
         self.key_code = {
             Key(vk=tcod.KEY_ENTER, ch='\r', alt=True): {'fullscreen': True},
-            Key(vk=tcod.KEY_ESCAPE, ch='\x1b'): {'exit': True},
+            Key(vk=tcod.KEY_ESCAPE, ch='\x1b'): {'save_and_exit': True},
             Key(vk=tcod.KEY_LEFT, shift=True): {'move': (-1, -1)},
             Key(vk=tcod.KEY_RIGHT, shift=True): {'move': (1, -1)},
             Key(vk=tcod.KEY_LEFT, ctrl=True): {'move': (-1, 1)},
@@ -139,3 +139,30 @@ class InputInventory(esper.Processor):
                 self.scene.action = {}
 
 
+class InputTitle(esper.Processor):
+    scene = None
+
+    def __init__(self):
+        super().__init__()
+        self.key = tcod.Key()
+        self.mouse = tcod.Mouse()
+
+    def process(self):
+        tcod.sys_wait_for_event(
+            mask=tcod.EVENT_ANY,
+            k=self.key,
+            m=self.mouse,
+            flush=False
+        )
+
+        if tcod.EVENT_KEY_PRESS and self.key.pressed:
+            if self.key.c == ord('a'):
+                self.scene.action = {'new_game': True}
+            elif self.key.c == ord('b'):
+                self.scene.action = {'load_game': True}
+            elif self.key.vk == tcod.KEY_ENTER and self.key.lalt:
+                self.scene.action = {'fullscreen': True}
+            elif self.key.c == ord('c') or self.key.vk == tcod.KEY_ESCAPE:
+                self.scene.action = {'exit': True}
+            else:
+                self.scene.action = {}

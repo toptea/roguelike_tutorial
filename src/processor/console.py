@@ -14,6 +14,10 @@ class Console(esper.Processor):
         if self.scene.action.get('exit'):
             sys.exit()
 
+        if self.scene.action.get('save_and_exit'):
+            self.scene.manager.save_game()
+            sys.exit()
+
         if self.scene.action.get('fullscreen'):
             tcod.console_set_fullscreen(not tcod.console_is_fullscreen())
             self.scene.message.append(('toggle fullscreen', tcod.blue))

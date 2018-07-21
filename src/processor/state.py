@@ -40,8 +40,6 @@ class StateShowInventory(esper.Processor):
         if self.scene.action != {}:
             if self.scene.action.get('exit'):
                 self.scene.change_processors('player_turn')
-            else:
-                self.scene.change_processors('show_inventory')
 
 
 class StateDropInventory(esper.Processor):
@@ -54,5 +52,19 @@ class StateDropInventory(esper.Processor):
         if self.scene.action != {}:
             if self.scene.action.get('exit'):
                 self.scene.change_processors('player_turn')
-            else:
-                self.scene.change_processors('drop_inventory')
+
+
+class StateTitle(esper.Processor):
+    scene = None
+
+    def __init__(self):
+        super().__init__()
+
+    def process(self, *args):
+        if self.scene.action != {}:
+
+            if self.scene.action.get('new_game'):
+                self.scene.manager.change_scene('game')
+
+            if self.scene.action.get('load_game'):
+                self.scene.manager.load_game()

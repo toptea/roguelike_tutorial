@@ -1,5 +1,5 @@
-from .render import RenderConsole, RenderPanel, RenderMenu
-from .input_handler import InputPlayer, InputInventory
+from .render import RenderConsole, RenderPanel, RenderMenu, RenderTitle
+from .input_handler import InputPlayer, InputInventory, InputTitle
 from .item import UseItem, DropItem
 from .move_player import MovePlayer
 from .move_enemy import MoveEnemy
@@ -12,7 +12,8 @@ from .state import (
     StateEnemyTurn,
     StatePlayerTurn,
     StateShowInventory,
-    StateDropInventory
+    StateDropInventory,
+    StateTitle
 )
 
 
