@@ -3,10 +3,12 @@ from .input_handler import InputPlayer, InputInventory, InputTitle
 from .item import UseItem, DropItem
 from .move_player import MovePlayer
 from .move_enemy import MoveEnemy
+from .stairs import TakeStairs
 from .console import Console
 from .pickup import PickUp
 from .death import Death
 from .fov import FOV
+
 
 from .state import (
     StateEnemyTurn,
@@ -20,14 +22,14 @@ from .state import (
 PROCESSOR_GROUP = {
     'player_turn': [
         FOV(),
-        RenderPanel(),
         RenderConsole(),
         InputPlayer(),
         MovePlayer(),
         Death(),
         PickUp(),
-        # Enter(),
+        TakeStairs(),
         Console(),
+        RenderPanel(),
         StatePlayerTurn()
     ],
     'enemy_turn': [

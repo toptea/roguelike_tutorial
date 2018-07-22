@@ -19,6 +19,11 @@ class StatePlayerTurn(esper.Processor):
             if self.scene.action.get('drop_inventory'):
                 self.scene.change_processors('drop_inventory')
 
+            if self.scene.action.get('next_level'):
+                player = self.scene.action.get('next_level')[0]
+                inventory = self.scene.action.get('next_level')[1]
+                self.scene.manager.next_level(player_entity=player, item_entities=inventory)
+
 
 class StateEnemyTurn(esper.Processor):
     scene = None

@@ -35,6 +35,7 @@ class InputPlayer(esper.Processor):
         self.key = tcod.Key()
         self.mouse = tcod.Mouse()
         self.key_code = {
+            Key(vk=tcod.KEY_ENTER, ch='\r'): {'take_stairs': True},
             Key(vk=tcod.KEY_ENTER, ch='\r', alt=True): {'fullscreen': True},
             Key(vk=tcod.KEY_ESCAPE, ch='\x1b'): {'save_and_exit': True},
             Key(vk=tcod.KEY_LEFT, shift=True): {'move': (-1, -1)},
@@ -107,7 +108,6 @@ class InputPlayer(esper.Processor):
             self.scene.action = self.key_code[user_input]
         else:
             self.scene.action = {}
-
         self.scene.mouse = self.mouse
 
 

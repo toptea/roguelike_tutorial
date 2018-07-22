@@ -15,7 +15,7 @@ class Singleton(type):
         return cls.instances[cls]
 
 
-class RenderConsole(esper.Processor, metaclass=Singleton):
+class RenderConsole(esper.Processor):
     scene = None
 
     def __init__(self):
@@ -255,7 +255,7 @@ class RenderPanel(esper.Processor, metaclass=Singleton):
         )
 
 
-class RenderMenu(esper.Processor, metaclass=Singleton):
+class RenderMenu(esper.Processor):
     scene = None
 
     def __init__(self, header_type):

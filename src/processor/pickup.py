@@ -41,12 +41,14 @@ class PickUp(esper.Processor):
                     self.scene.message.append(
                         ('You cannot carry any more, your inventory is full.', tcod.yellow)
                     )
+                    break
                 else:
                     self.scene.message.append(
                         ('You pick up the {0}!'.format(item_desc.name), tcod.cyan)
                     )
                     inventory.items.append(item)
                     self.world.remove_component(item, c.Position)
+                    break
             else:
                 self.scene.message.append(
                     ('There is nothing here to pick up.', tcod.yellow)

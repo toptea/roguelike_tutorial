@@ -48,3 +48,12 @@ def scroll(x, y):
         c.Aimable(),
         c.StatsModifier(hp=-10)
     )
+
+
+def stairs(x, y):
+    return (
+        c.Position(x=x, y=y),
+        c.Renderable(char='>', fg=tcod.white, layer=const.LAYER_STAIRS),
+        c.Describable(name='Stairs'),
+        c.Enterable()
+    )
