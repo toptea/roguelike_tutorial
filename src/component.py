@@ -85,10 +85,11 @@ class Stats:
 
 @dataclass
 class Status:
+    countdown: int = 3
     confuse: bool = False
     paralyse: bool = False
-    sleep: bool = False
-    poison: bool = False
+    freeze: bool = False
+    burn: bool = False
 
 
 @dataclass
@@ -101,10 +102,11 @@ class StatsModifier:
 
 @dataclass
 class StatusModifier:
+    countdown: int = 3
     confuse: bool = False
     paralyse: bool = False
-    sleep: bool = False
-    poison: bool = False
+    freeze: bool = False
+    burn: bool = False
 
 
 @dataclass

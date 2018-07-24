@@ -1,8 +1,9 @@
-from .experience import Experience
+from .targeting import UpdateTargeting
+from .level_up import UpdateLevelUp
 from .move_player import MovePlayer
 from .move_enemy import MoveEnemy
+from .experience import Experience
 from .stairs import TakeStairs
-from .level_up import UpdateLevelUp
 from .console import Console
 from .pickup import PickUp
 from .death import Death
@@ -23,11 +24,12 @@ from .input_handler import (
     InputTitle,
     InputLevelUp,
     InputCharacterScreen,
+    InputTargeting
 )
 
 from .inventory import (
     UpdateUseInventory,
-    UpdateDropInventory
+    UpdateDropInventory,
 )
 
 from .state import (
@@ -38,6 +40,7 @@ from .state import (
     StateTitle,
     StateLevelUp,
     StateCharacterScreen,
+    StateTargeting
 )
 
 
@@ -74,10 +77,13 @@ PROCESSOR_GROUP = {
         UpdateDropInventory(),
         StateDropInventory()
     ],
-    'target': [
+    'targeting': [
         RenderPanel(),
-        # InputTargeting(),
-        # Targeting(),
+        RenderConsole(),
+        InputTargeting(),
+        UpdateTargeting(),
+        Death(),
+        StateTargeting(),
     ],
     'level_up': [
         # RenderPanel(),

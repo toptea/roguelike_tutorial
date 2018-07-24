@@ -20,7 +20,13 @@ class RandomMonster:
 
     def generate(self, x, y):
         row = random.choice(self.monsters)
-        return monster(row['name'], row['char'], row['fg'], x, y)
+        return monster(
+            name=row['name'],
+            char=row['char'],
+            fg=row['fg'],
+            x=x,
+            y=y
+        )
 
 
 def monster(name, char, fg, x, y):
@@ -44,9 +50,18 @@ def player(x, y):
         c.Renderable('@'),
         c.Collidable(),
         c.Describable(name='player'),
-        c.Stats(max_hp=30, hp=15, defense=2, power=5),
+        c.Stats(max_hp=30, hp=30, defense=2, power=5),
         c.Inventory([]),
         c.Experience(),
+    )
+
+
+def stairs(x, y):
+    return (
+        c.Position(x=x, y=y),
+        c.Renderable(char='>', fg=tcod.white, layer=const.LAYER_STAIRS),
+        c.Describable(name='Stairs'),
+        c.Enterable()
     )
 
 
@@ -61,21 +76,36 @@ def healing_potion(x, y):
     )
 
 
-def scroll(x, y):
+class RandomScroll:
+    def __init__(self):
+        self.scrolls = {}
+        self._load_csv()
+
+    def _load_csv(self):
+        with open('data/scroll.csv', newline='') as file:
+            reader = csv.DictReader(file)
+            for i, row in enumerate(reader):
+                row['fg'] = getattr(tcod, row['fg'])
+                self.scrolls[i] = row
+
+    def generate(self, x, y):
+        row = random.choice(self.scrolls)
+        return scroll(
+            name=row['name'],
+            char=row['char'],
+            fg=row['fg'],
+            x=x,
+            y=y
+        )
+
+
+def scroll(name='fireball', char='#', fg=tcod.red, x=0, y=0):
     return (
         c.Position(x=x, y=y),
-        c.Renderable(char='#', fg=tcod.orange, layer=const.LAYER_ITEM),
-        c.Describable(name='fire'),
+        c.Renderable(char=char, fg=fg, layer=const.LAYER_ITEM),
+        c.Describable(name=name),
         c.Carryable(),
         c.Aimable(),
-        c.StatsModifier(hp=-10)
-    )
-
-
-def stairs(x, y):
-    return (
-        c.Position(x=x, y=y),
-        c.Renderable(char='>', fg=tcod.white, layer=const.LAYER_STAIRS),
-        c.Describable(name='Stairs'),
-        c.Enterable()
+        c.StatsModifier(hp=-200),
+        c.StatusModifer(),
     )

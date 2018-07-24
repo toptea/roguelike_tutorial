@@ -217,3 +217,30 @@ class InputCharacterScreen(esper.Processor):
             self.scene.action = {'exit': True}
         else:
             self.scene.action = {}
+
+
+class InputTargeting(esper.Processor):
+    scene = None
+
+    def __init__(self):
+        super().__init__()
+        self.key = tcod.Key()
+        self.mouse = tcod.Mouse()
+
+    def process(self):
+        tcod.sys_wait_for_event(
+            mask=tcod.EVENT_ANY,
+            k=self.key,
+            m=self.mouse,
+            flush=False
+        )
+
+        print(self.scene.action)
+        x, y = self.mouse.cx, self.mouse.cy
+        if self.key.vk == tcod.KEY_ESCAPE:
+            self.scene.action = {'exit': True}
+        if self.mouse.lbutton_pressed:
+            self.scene.action['left_click'] = (x, y)
+        if self.mouse.rbutton_pressed:
+            self.scene.action['right_click'] = (x, y)
+        print(self.scene.action)
