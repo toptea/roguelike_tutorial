@@ -38,6 +38,7 @@ def monster(name, char, fg, x, y):
         c.Collidable(),
         c.Describable(name=name),
         c.Stats(hp=10, defense=0, power=3),
+        c.Status(),
         c.ExperienceModifier(),
     )
 
@@ -51,6 +52,7 @@ def player(x, y):
         c.Collidable(),
         c.Describable(name='player'),
         c.Stats(max_hp=30, hp=30, defense=2, power=5),
+        c.Status(),
         c.Inventory([]),
         c.Experience(),
     )
@@ -107,5 +109,5 @@ def scroll(name='fireball', char='#', fg=tcod.red, x=0, y=0):
         c.Carryable(),
         c.Aimable(),
         c.StatsModifier(hp=-200),
-        c.StatusModifer(),
+        c.StatusModifier(),
     )

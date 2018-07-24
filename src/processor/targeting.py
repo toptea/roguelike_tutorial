@@ -15,10 +15,11 @@ class UpdateTargeting(esper.Processor):
             c.Carryable,
             c.Aimable,
             c.StatsModifier,
-            c.StatusModifer,
+            c.StatusModifier,
             c.Describable
         )
-        for item, (_, _, stats_mod, item_desc) in iterable:
+
+        for item, (_, _, stats_mod, status_mod, item_desc) in iterable:
             if self.scene.action.get('target_with') == item:
                 yield (item, stats_mod, item_desc)
 
@@ -38,12 +39,13 @@ class UpdateTargeting(esper.Processor):
             c.Status,
             c.Describable
         )
-        for _, (pos, target_stats, target_desc) in iterable:
+        for _, (pos, target_stats, target_status, target_desc) in iterable:
             if pos.x == x and pos.y == y:
                 if self.scene.game_map.fov[pos.y, pos.x]:
                     yield (target_stats, target_desc)
 
     def process(self, *args):
+
         if self.scene.action.get('left_click'):
             for target_stats, target_desc in self.get_target():
                 for item, stats_mod, item_desc in self.get_scroll():

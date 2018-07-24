@@ -235,7 +235,6 @@ class InputTargeting(esper.Processor):
             flush=False
         )
 
-        print(self.scene.action)
         x, y = self.mouse.cx, self.mouse.cy
         if self.key.vk == tcod.KEY_ESCAPE:
             self.scene.action = {'exit': True}
@@ -243,4 +242,3 @@ class InputTargeting(esper.Processor):
             self.scene.action['left_click'] = (x, y)
         if self.mouse.rbutton_pressed:
             self.scene.action['right_click'] = (x, y)
-        print(self.scene.action)
