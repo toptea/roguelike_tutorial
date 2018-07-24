@@ -1,4 +1,5 @@
 import processor
+import component as c
 import level
 import const
 
@@ -31,8 +32,21 @@ class SceneManager:
     def change_scene(self, state):
         self.current_scene = self.scenes[state]
 
-    def randomize_scene(self):
-        self.current_scene = Game()
+    def next_level(self, player_entity=None, item_entities=None):
+        if player_entity:
+            world = self.scenes['game'].world
+            entities = world._entities.copy()
+            for ent in (ent for ent in entities.keys() if ent != player_entity and ent not in item_entities):
+                world.delete_entity(ent, immediate=True)
+
+            self.scenes['game'] = Game(world=world, create_player=False)
+            player_pos = self.scenes['game'].world.component_for_entity(player_entity, c.Position)
+            x, y = self.scenes['game'].start_pos
+            player_pos.x = x
+            player_pos.y = y
+        else:
+            self.scenes['game'] = Game()
+        self.current_scene = self.scenes['game']
 
     def save_game(self):
         with open('data/save/components.pickle', 'wb') as file:
@@ -55,8 +69,6 @@ class SceneManager:
                 file=file,
                 protocol=pickle.HIGHEST_PROTOCOL
             )
-
-        # np.save('game_map', self.scenes['game'].game_map)
 
     def load_game(self):
         with open('data/save/components.pickle', 'rb') as file:
@@ -87,12 +99,14 @@ class Scene:
 
 
 class Game(Scene):
-    def __init__(self, world=esper.World(), game_map=None):
+    def __init__(self, world=None, game_map=None, create_player=True):
+        self.start_pos = None
         self.world = world
         self.game_map = game_map
+        if world is None:
+            self.world = esper.World()
         if game_map is None:
-            self._create_level()
-
+            self._create_level(create_player)
         self.astar = tcod.path.AStar(self.game_map.walkable)
 
         self.processor_group = processor.PROCESSOR_GROUP
@@ -103,11 +117,9 @@ class Game(Scene):
         self.action = {}
         self.mouse = tcod.Mouse()
 
-        self.map_width = const.MAP_WIDTH
-        self.map_height = const.MAP_HEIGHT
         self.con = tcod.console.Console(
-            width=self.map_width,
-            height=self.map_height
+            width=const.MAP_WIDTH,
+            height=const.MAP_HEIGHT
         )
 
         self.panel = tcod.console.Console(
@@ -115,17 +127,18 @@ class Game(Scene):
             height=const.PANEL_HEIGHT
         )
 
-    def _create_level(self):
+    def _create_level(self, create_player):
         lvl = level.Level()
         lvl.make_blueprint()
         lvl.make_map()
-        lvl.place_entities()
+        lvl.place_entities(create_player)
 
         for entity in lvl.entities:
             if len(entity) <= 1:
                 self.world.create_entity(entity)
             else:
                 self.world.create_entity(*entity)
+        self.start_pos = lvl.get_start_position()
         self.game_map = lvl.game_map
 
     def change_processors(self, state):

@@ -35,6 +35,7 @@ class InputPlayer(esper.Processor):
         self.key = tcod.Key()
         self.mouse = tcod.Mouse()
         self.key_code = {
+            Key(vk=tcod.KEY_ENTER, ch='\r'): {'take_stairs': True},
             Key(vk=tcod.KEY_ENTER, ch='\r', alt=True): {'fullscreen': True},
             Key(vk=tcod.KEY_ESCAPE, ch='\x1b'): {'save_and_exit': True},
             Key(vk=tcod.KEY_LEFT, shift=True): {'move': (-1, -1)},
@@ -60,7 +61,7 @@ class InputPlayer(esper.Processor):
             Key(vk=tcod.KEY_F12): {'screenshot': True},
             Key(ch='a'): {},
             Key(ch='b'): {'move': (-1, 1)},
-            Key(ch='c'): {},
+            Key(ch='c'): {'show_character_screen': True},
             Key(ch='d'): {'drop_inventory': True},
             Key(ch='e'): {},
             Key(ch='f'): {},
@@ -107,7 +108,6 @@ class InputPlayer(esper.Processor):
             self.scene.action = self.key_code[user_input]
         else:
             self.scene.action = {}
-
         self.scene.mouse = self.mouse
 
 
@@ -166,3 +166,81 @@ class InputTitle(esper.Processor):
                 self.scene.action = {'exit': True}
             else:
                 self.scene.action = {}
+
+
+class InputLevelUp(esper.Processor):
+    scene = None
+
+    def __init__(self):
+        super().__init__()
+        self.key = tcod.Key()
+        self.mouse = tcod.Mouse()
+
+    def process(self):
+        tcod.sys_wait_for_event(
+            mask=tcod.EVENT_ANY,
+            k=self.key,
+            m=self.mouse,
+            flush=False
+        )
+
+        if tcod.EVENT_KEY_PRESS and self.key.pressed:
+            if self.key.c == ord('a'):
+                self.scene.action = {'level_up': 'hp'}
+            elif self.key.c == ord('b'):
+                self.scene.action = {'level_up': 'str'}
+            elif self.key.c == ord('c'):
+                self.scene.action = {'level_up': 'def'}
+            elif self.key.vk == tcod.KEY_ENTER and self.key.lalt:
+                self.scene.action = {'fullscreen': True}
+            else:
+                self.scene.action = {}
+
+
+class InputCharacterScreen(esper.Processor):
+    scene = None
+
+    def __init__(self):
+        super().__init__()
+        self.key = tcod.Key()
+        self.mouse = tcod.Mouse()
+
+    def process(self):
+        tcod.sys_wait_for_event(
+            mask=tcod.EVENT_ANY,
+            k=self.key,
+            m=self.mouse,
+            flush=False
+        )
+
+        if self.key.vk == tcod.KEY_ESCAPE:
+            self.scene.action = {'exit': True}
+        else:
+            self.scene.action = {}
+
+
+class InputTargeting(esper.Processor):
+    scene = None
+
+    def __init__(self):
+        super().__init__()
+        self.key = tcod.Key()
+        self.mouse = tcod.Mouse()
+
+    def process(self):
+        tcod.sys_wait_for_event(
+            mask=tcod.EVENT_ANY,
+            k=self.key,
+            m=self.mouse,
+            flush=False
+        )
+
+        print(self.scene.action)
+        x, y = self.mouse.cx, self.mouse.cy
+        if self.key.vk == tcod.KEY_ESCAPE:
+            self.scene.action = {'exit': True}
+        if self.mouse.lbutton_pressed:
+            self.scene.action['left_click'] = (x, y)
+        if self.mouse.rbutton_pressed:
+            self.scene.action['right_click'] = (x, y)
+        print(self.scene.action)

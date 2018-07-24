@@ -1,33 +1,61 @@
-from .render import RenderConsole, RenderPanel, RenderMenu, RenderTitle
-from .input_handler import InputPlayer, InputInventory, InputTitle
-from .item import UseItem, DropItem
+from .targeting import UpdateTargeting
+from .level_up import UpdateLevelUp
 from .move_player import MovePlayer
 from .move_enemy import MoveEnemy
+from .experience import Experience
+from .stairs import TakeStairs
 from .console import Console
 from .pickup import PickUp
 from .death import Death
 from .fov import FOV
+
+from .render import (
+    RenderConsole,
+    RenderPanel,
+    RenderInventory,
+    RenderTitle,
+    RenderLevelUp,
+    RenderCharacterScreen,
+)
+
+from .input_handler import (
+    InputPlayer,
+    InputInventory,
+    InputTitle,
+    InputLevelUp,
+    InputCharacterScreen,
+    InputTargeting
+)
+
+from .inventory import (
+    UpdateUseInventory,
+    UpdateDropInventory,
+)
 
 from .state import (
     StateEnemyTurn,
     StatePlayerTurn,
     StateShowInventory,
     StateDropInventory,
-    StateTitle
+    StateTitle,
+    StateLevelUp,
+    StateCharacterScreen,
+    StateTargeting
 )
 
 
 PROCESSOR_GROUP = {
     'player_turn': [
         FOV(),
-        RenderPanel(),
         RenderConsole(),
         InputPlayer(),
         MovePlayer(),
+        Experience(),
         Death(),
         PickUp(),
-        # Enter(),
+        TakeStairs(),
         Console(),
+        RenderPanel(),
         StatePlayerTurn()
     ],
     'enemy_turn': [
@@ -37,21 +65,36 @@ PROCESSOR_GROUP = {
     ],
     'show_inventory': [
         RenderPanel(),
-        RenderMenu('show'),
+        RenderInventory('show'),
         InputInventory(),
-        UseItem(),
+        UpdateUseInventory(),
         StateShowInventory()
     ],
     'drop_inventory': [
         RenderPanel(),
-        RenderMenu('drop'),
+        RenderInventory('drop'),
         InputInventory(),
-        DropItem(),
+        UpdateDropInventory(),
         StateDropInventory()
     ],
-    'target': [
+    'targeting': [
         RenderPanel(),
-        # InputTargeting(),
-        # Targeting(),
+        RenderConsole(),
+        InputTargeting(),
+        UpdateTargeting(),
+        Death(),
+        StateTargeting(),
     ],
+    'level_up': [
+        # RenderPanel(),
+        RenderLevelUp(),
+        InputLevelUp(),
+        UpdateLevelUp(),
+        StateLevelUp(),
+    ],
+    'character_screen': [
+        RenderCharacterScreen(),
+        InputCharacterScreen(),
+        StateCharacterScreen(),
+    ]
 }

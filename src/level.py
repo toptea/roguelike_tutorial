@@ -247,6 +247,7 @@ class Level:
 
         self.rooms = []
         self.entities = []
+        self.start_pos = None
 
     def _gen_room(self):
         """used in _make_blueprint() method"""
@@ -386,22 +387,33 @@ class Level:
         self.game_map.transparent[:-2, :-2] = self.game_map.transparent[:-2, :-2] > fov_fix2
         self.game_map.transparent[:-2, 2:] = self.game_map.transparent[:-2, 2:] > fov_fix3
 
-    def place_entities(self):
-
+    def place_entities(self, create_player=True):
         while True:
             y, x = self.rooms[0].random_position()
             if self.game_map.walkable[y, x]:
                 break
-        self.entities.append(entity.player(x, y))
+        if create_player:
+            self.entities.append(entity.player(x, y))
+        else:
+            self.start_pos = (x, y)
+
+        valid_pos = []
+        num_stairs = 1
+        for _ in range(num_stairs):
+            while True:
+                y, x = self.rooms[-1].random_position()
+                if self.game_map.walkable[y, x]:
+                    valid_pos.append((x, y))
+                    break
 
         for room in range(1, self.max_rooms):
             num_monster = np.random.randint(0, const.MAX_MONSTERS_PER_ROOM)
             num_item = np.random.randint(0, const.MAX_ITEMS_PER_ROOM)
-            valid_pos = []
+            monster = entity.RandomMonster()
+            scroll = entity.RandomScroll()
+
             for _ in range(num_monster + num_item):
-
                 while True:
-
                     y, x = self.rooms[room].random_position()
                     if self.game_map.walkable[y, x]:
                         valid_pos.append((x, y))
@@ -410,8 +422,15 @@ class Level:
             if len(valid_pos) != 0:
                 for _ in range(num_monster):
                     x, y = valid_pos.pop()
-                    self.entities.append(entity.monster('M', tcod.red, x, y))
+                    self.entities.append(monster.generate(x, y))
 
                 for _ in range(num_item):
                     x, y = valid_pos.pop()
-                    self.entities.append(entity.healing_potion(x, y))
+                    # self.entities.append(entity.healing_potion(x=x, x=y))
+                    self.entities.append(scroll.generate(x=x, y=y))
+        for _ in range(num_stairs):
+            x, y = valid_pos.pop()
+            self.entities.append(entity.stairs(x, y))
+
+    def get_start_position(self):
+        return self.start_pos

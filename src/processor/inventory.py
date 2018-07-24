@@ -4,7 +4,7 @@ import esper
 import tcod
 
 
-class UseItem(esper.Processor):
+class UpdateUseInventory(esper.Processor):
     scene = None
 
     def __init__(self):
@@ -33,17 +33,10 @@ class UseItem(esper.Processor):
                 if use_item == item:
                     yield (item, inventory, stats, modifier)
 
-    def get_aimable(self):
-        iterable = self.world.get_components(
-            c.Carryable,
-            c.Aimable
-        )
-        for item, (_, _) in iterable:
-            yield item
-
     def process(self, *args):
         if self.scene.action.get('inventory_index'):
             self.use_consumable()
+            self.use_aimable()
 
     def use_consumable(self):
         for item, inventory, stats, modifier in self.get_use_comsumable():
@@ -61,8 +54,18 @@ class UseItem(esper.Processor):
                 inventory.items.remove(item)
                 self.world.delete_entity(item)
 
+    def use_aimable(self):
+        scroll_components = self.world.get_components(
+            c.Carryable,
+            c.Aimable
+        )
+        for (use_item, inventory, stats) in self.get_player_item():
+            for item, (_, _) in scroll_components:
+                if use_item == item:
+                    self.scene.action = {'target_with': item}
 
-class DropItem(esper.Processor):
+
+class UpdateDropInventory(esper.Processor):
     scene = None
 
     def __init__(self):

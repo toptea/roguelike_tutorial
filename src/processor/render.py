@@ -15,7 +15,7 @@ class Singleton(type):
         return cls.instances[cls]
 
 
-class RenderConsole(esper.Processor, metaclass=Singleton):
+class RenderConsole(esper.Processor):
     scene = None
 
     def __init__(self):
@@ -255,7 +255,7 @@ class RenderPanel(esper.Processor, metaclass=Singleton):
         )
 
 
-class RenderMenu(esper.Processor, metaclass=Singleton):
+class RenderInventory(esper.Processor):
     scene = None
 
     def __init__(self, header_type):
@@ -299,7 +299,7 @@ class RenderMenu(esper.Processor, metaclass=Singleton):
 class RenderTitle(esper.Processor):
     scene = None
 
-    def __init__(self,):
+    def __init__(self):
         self.image = tcod.image_load('data/menu_background.png')
         self.title = 'TOMBS OF THE ANCIENT KINGS'
         self.author = 'By toptea'
@@ -331,7 +331,103 @@ class RenderTitle(esper.Processor):
             screen_height=const.SCREEN_HEIGHT
         )
 
+        tcod.console_flush()
 
+
+class RenderLevelUp(esper.Processor):
+    scene = None
+
+    def __init__(self):
+        super().__init__()
+
+    def get_player(self):
+        iterable = self.world.get_components(
+            c.PlayerTurn,
+            c.Stats,
+        )
+        for _, (_, stats) in iterable:
+            yield stats
+
+    def process(self):
+        for stats in self.get_player():
+            options = [
+                'Constitution (+20 HP, from {0})'.format(stats.max_hp),
+                'Strength (+1 attack, from {0})'.format(stats.power),
+                'Agility (+1 defense, from {0})'.format(stats.defense)
+            ]
+
+            _menu(
+                scene=self.scene,
+                header='Level up! Choose a stat to raise:',
+                options=options,
+                width=40,
+                screen_width=const.SCREEN_WIDTH,
+                screen_height=const.SCREEN_HEIGHT
+            )
+
+            tcod.console_flush()
+
+
+class RenderCharacterScreen(esper.Processor):
+    scene = None
+
+    def __init__(self):
+        self.width = 30
+        self.height = 10
+        super().__init__()
+
+    def get_player_info(self):
+        iterable = self.world.get_components(
+            c.PlayerTurn,
+            c.Stats,
+            c.Experience,
+        )
+        info = []
+        for _, (_, stats, exp) in iterable:
+            info = [
+                'Character Information',
+                '',
+                'Level: {0}'.format(exp.level),
+                'Experience: {0}'.format(exp.xp),
+                'Experience to Level: {0}'.format(exp.xp_to_next_level),
+                'Maximum HP: {0}'.format(stats.max_hp),
+                'Attack: {0}'.format(stats.power),
+                'Defense: {0}'.format(stats.defense)
+            ]
+        return info
+
+    def process(self):
+
+        window = tcod.console_new(self.width, self.height)
+        tcod.console_set_default_foreground(window, tcod.white)
+        """(con, x, y, w, h, flag, alignment, fmt)"""
+
+        info = self.get_player_info()
+        for y, text in enumerate(info):
+            tcod.console_print_rect_ex(
+                con=window,
+                x=0, y=y,
+                w=self.width,
+                h=self.height,
+                flag=tcod.BKGND_NONE,
+                alignment=tcod.LEFT,
+                fmt=text
+            )
+
+        x = const.SCREEN_WIDTH // 2 - self.width // 2
+        y = const.SCREEN_HEIGHT // 2 - self.height // 2
+        window.blit(
+            dest=self.scene.manager.root_console,
+            dest_x=x,
+            dest_y=y,
+            src_x=0,
+            src_y=0,
+            width=self.width,
+            height=self.height,
+            fg_alpha=1.0,
+            bg_alpha=0.7,
+            key_color=None
+        )
         tcod.console_flush()
 
 
