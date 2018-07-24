@@ -1,29 +1,33 @@
-from .inventory import UseInventory, DropInventory
 from .experience import Experience
 from .move_player import MovePlayer
 from .move_enemy import MoveEnemy
 from .stairs import TakeStairs
-from .level_up import LevelUp
+from .level_up import UpdateLevelUp
 from .console import Console
 from .pickup import PickUp
 from .death import Death
 from .fov import FOV
-
-
 
 from .render import (
     RenderConsole,
     RenderPanel,
     RenderInventory,
     RenderTitle,
-    RenderLevelUp
+    RenderLevelUp,
+    RenderCharacterScreen,
 )
 
 from .input_handler import (
     InputPlayer,
     InputInventory,
     InputTitle,
-    InputLevelUp
+    InputLevelUp,
+    InputCharacterScreen,
+)
+
+from .inventory import (
+    UpdateUseInventory,
+    UpdateDropInventory
 )
 
 from .state import (
@@ -33,6 +37,7 @@ from .state import (
     StateDropInventory,
     StateTitle,
     StateLevelUp,
+    StateCharacterScreen,
 )
 
 
@@ -59,14 +64,14 @@ PROCESSOR_GROUP = {
         RenderPanel(),
         RenderInventory('show'),
         InputInventory(),
-        UseInventory(),
+        UpdateUseInventory(),
         StateShowInventory()
     ],
     'drop_inventory': [
         RenderPanel(),
         RenderInventory('drop'),
         InputInventory(),
-        DropInventory(),
+        UpdateDropInventory(),
         StateDropInventory()
     ],
     'target': [
@@ -75,10 +80,15 @@ PROCESSOR_GROUP = {
         # Targeting(),
     ],
     'level_up': [
-        RenderPanel(),
+        # RenderPanel(),
         RenderLevelUp(),
         InputLevelUp(),
-        LevelUp(),
+        UpdateLevelUp(),
         StateLevelUp(),
+    ],
+    'character_screen': [
+        RenderCharacterScreen(),
+        InputCharacterScreen(),
+        StateCharacterScreen(),
     ]
 }

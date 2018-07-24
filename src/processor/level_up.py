@@ -3,7 +3,7 @@ import component as c
 import esper
 
 
-class LevelUp(esper.Processor):
+class UpdateLevelUp(esper.Processor):
     scene = None
 
     def __init__(self):

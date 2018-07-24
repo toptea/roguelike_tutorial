@@ -64,7 +64,7 @@ def healing_potion(x, y):
 def scroll(x, y):
     return (
         c.Position(x=x, y=y),
-        c.Renderable(char='!', fg=tcod.orange, layer=const.LAYER_ITEM),
+        c.Renderable(char='#', fg=tcod.orange, layer=const.LAYER_ITEM),
         c.Describable(name='fire'),
         c.Carryable(),
         c.Aimable(),

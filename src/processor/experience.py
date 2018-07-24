@@ -37,7 +37,7 @@ class Experience(esper.Processor):
             if exp.xp > exp.xp_to_next_level:
                 exp.xp -= exp.xp_to_next_level
                 exp.level += 1
-                self.scene.action = {'level_up': True}
+                self.scene.action = {'show_level_up': True}
                 self.scene.message.append(
                     (
                         'Your battle skills grow stronger! You reached level {0}'.format(

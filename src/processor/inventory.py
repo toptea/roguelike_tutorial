@@ -4,7 +4,7 @@ import esper
 import tcod
 
 
-class UseInventory(esper.Processor):
+class UpdateUseInventory(esper.Processor):
     scene = None
 
     def __init__(self):
@@ -62,7 +62,7 @@ class UseInventory(esper.Processor):
                 self.world.delete_entity(item)
 
 
-class DropInventory(esper.Processor):
+class UpdateDropInventory(esper.Processor):
     scene = None
 
     def __init__(self):

@@ -61,7 +61,7 @@ class InputPlayer(esper.Processor):
             Key(vk=tcod.KEY_F12): {'screenshot': True},
             Key(ch='a'): {},
             Key(ch='b'): {'move': (-1, 1)},
-            Key(ch='c'): {},
+            Key(ch='c'): {'show_character_screen': True},
             Key(ch='d'): {'drop_inventory': True},
             Key(ch='e'): {},
             Key(ch='f'): {},
@@ -195,3 +195,25 @@ class InputLevelUp(esper.Processor):
                 self.scene.action = {'fullscreen': True}
             else:
                 self.scene.action = {}
+
+
+class InputCharacterScreen(esper.Processor):
+    scene = None
+
+    def __init__(self):
+        super().__init__()
+        self.key = tcod.Key()
+        self.mouse = tcod.Mouse()
+
+    def process(self):
+        tcod.sys_wait_for_event(
+            mask=tcod.EVENT_ANY,
+            k=self.key,
+            m=self.mouse,
+            flush=False
+        )
+
+        if self.key.vk == tcod.KEY_ESCAPE:
+            self.scene.action = {'exit': True}
+        else:
+            self.scene.action = {}
