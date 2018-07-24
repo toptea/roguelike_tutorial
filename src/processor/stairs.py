@@ -10,24 +10,21 @@ class TakeStairs(esper.Processor):
     def __init__(self):
         super().__init__()
 
-    def get_player_item(self):
-        iterable = self.world.get_components(
+    def get_player_on_stairs(self):
+        player_components = self.world.get_components(
             c.PlayerTurn,
             c.Position,
             c.Inventory,
             c.Stats
         )
-        for player, (_, player_pos, inventory, stats) in iterable:
-            yield (player, player_pos, inventory, stats)
 
-    def get_stairs(self):
-        iterable = self.world.get_components(c.Enterable, c.Position)
-        for _, (_, stairs_pos) in iterable:
-            yield stairs_pos
+        stairs_components = self.world.get_components(
+            c.Enterable,
+            c.Position
+        )
 
-    def get_player_on_stairs(self):
-        for player, player_pos, inventory, stats in self.get_player_item():
-            for stairs_pos in self.get_stairs():
+        for player, (_, player_pos, inventory, stats) in player_components:
+            for _, (_, stairs_pos) in stairs_components:
                 if player_pos.x == stairs_pos.x and player_pos.y == stairs_pos.y:
                     yield (player, inventory, stats)
 

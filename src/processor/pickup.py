@@ -10,27 +10,21 @@ class PickUp(esper.Processor):
     def __init__(self):
         super().__init__()
 
-    def get_player(self):
-        iterable = self.world.get_components(
+    def get_pickup_item(self):
+        player_components = self.world.get_components(
             c.PlayerTurn,
             c.Position,
             c.Inventory
         )
-        for _, (_, player_pos, inventory) in iterable:
-            yield (player_pos, inventory)
 
-    def get_items(self):
-        iterable = self.world.get_components(
+        item_components = self.world.get_components(
             c.Carryable,
             c.Position,
             c.Describable,
         )
-        for item, (_, item_pos, item_desc) in iterable:
-            yield (item, item_pos, item_desc)
 
-    def get_pickup_item(self):
-        for player_pos, inventory in self.get_player():
-            for item, item_pos, item_desc in self.get_items():
+        for _, (_, player_pos, inventory) in player_components:
+            for item, (_, item_pos, item_desc) in item_components:
                 if player_pos.x == item_pos.x and player_pos.y == item_pos.y:
                     yield (item, item_pos, item_desc, player_pos, inventory)
 

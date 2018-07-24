@@ -4,7 +4,7 @@ import esper
 import tcod
 
 
-class UseItem(esper.Processor):
+class UseInventory(esper.Processor):
     scene = None
 
     def __init__(self):
@@ -33,13 +33,13 @@ class UseItem(esper.Processor):
                 if use_item == item:
                     yield (item, inventory, stats, modifier)
 
-    def get_aimable(self):
-        iterable = self.world.get_components(
-            c.Carryable,
-            c.Aimable
-        )
-        for item, (_, _) in iterable:
-            yield item
+    # def get_aimable(self):
+    #     iterable = self.world.get_components(
+    #         c.Carryable,
+    #         c.Aimable
+    #     )
+    #     for item, (_, _) in iterable:
+    #         yield item
 
     def process(self, *args):
         if self.scene.action.get('inventory_index'):
@@ -62,7 +62,7 @@ class UseItem(esper.Processor):
                 self.world.delete_entity(item)
 
 
-class DropItem(esper.Processor):
+class DropInventory(esper.Processor):
     scene = None
 
     def __init__(self):

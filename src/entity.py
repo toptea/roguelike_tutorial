@@ -1,6 +1,39 @@
 import component as c
 import const
+
+import random
 import tcod
+import csv
+
+
+class RandomMonster:
+    def __init__(self):
+        self.monsters = {}
+        self._load_csv()
+
+    def _load_csv(self):
+        with open('data/monster.csv', newline='') as file:
+            reader = csv.DictReader(file)
+            for i, row in enumerate(reader):
+                row['fg'] = getattr(tcod, row['fg'])
+                self.monsters[i] = row
+
+    def generate(self, x, y):
+        row = random.choice(self.monsters)
+        return monster(row['name'], row['char'], row['fg'], x, y)
+
+
+def monster(name, char, fg, x, y):
+    return (
+        c.EnemyTurn(),
+        c.Position(x=x, y=y),
+        c.Movable(),
+        c.Renderable(char=char, fg=fg),
+        c.Collidable(),
+        c.Describable(name=name),
+        c.Stats(hp=10, defense=0, power=3),
+        c.ExperienceModifier(),
+    )
 
 
 def player(x, y):
@@ -13,18 +46,7 @@ def player(x, y):
         c.Describable(name='player'),
         c.Stats(max_hp=30, hp=15, defense=2, power=5),
         c.Inventory([]),
-    )
-
-
-def monster(char, fg, x, y):
-    return (
-        c.EnemyTurn(),
-        c.Position(x=x, y=y),
-        c.Movable(),
-        c.Renderable(char=char, fg=fg),
-        c.Collidable(),
-        c.Describable(name='monster'),
-        c.Stats(hp=10, defense=0, power=3),
+        c.Experience(),
     )
 
 

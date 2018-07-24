@@ -255,7 +255,7 @@ class RenderPanel(esper.Processor, metaclass=Singleton):
         )
 
 
-class RenderMenu(esper.Processor):
+class RenderInventory(esper.Processor):
     scene = None
 
     def __init__(self, header_type):
@@ -299,7 +299,7 @@ class RenderMenu(esper.Processor):
 class RenderTitle(esper.Processor):
     scene = None
 
-    def __init__(self,):
+    def __init__(self):
         self.image = tcod.image_load('data/menu_background.png')
         self.title = 'TOMBS OF THE ANCIENT KINGS'
         self.author = 'By toptea'
@@ -331,8 +331,41 @@ class RenderTitle(esper.Processor):
             screen_height=const.SCREEN_HEIGHT
         )
 
-
         tcod.console_flush()
+
+
+class RenderLevelUp(esper.Processor):
+    scene = None
+
+    def __init__(self):
+        super().__init__()
+
+    def get_player(self):
+        iterable = self.world.get_components(
+            c.PlayerTurn,
+            c.Stats,
+        )
+        for _, (_, stats) in iterable:
+            yield stats
+
+    def process(self):
+        for stats in self.get_player():
+            options = [
+                'Constitution (+20 HP, from {0})'.format(stats.max_hp),
+                'Strength (+1 attack, from {0})'.format(stats.power),
+                'Agility (+1 defense, from {0})'.format(stats.defense)
+            ]
+
+            _menu(
+                scene=self.scene,
+                header='Level up! Choose a stat to raise:',
+                options=options,
+                width=40,
+                screen_width=const.SCREEN_WIDTH,
+                screen_height=const.SCREEN_HEIGHT
+            )
+
+            tcod.console_flush()
 
 
 def _menu(scene, header, options, width, screen_width, screen_height):

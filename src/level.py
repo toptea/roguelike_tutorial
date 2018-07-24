@@ -409,6 +409,7 @@ class Level:
         for room in range(1, self.max_rooms):
             num_monster = np.random.randint(0, const.MAX_MONSTERS_PER_ROOM)
             num_item = np.random.randint(0, const.MAX_ITEMS_PER_ROOM)
+            monster = entity.RandomMonster()
             for _ in range(num_monster + num_item):
                 while True:
                     y, x = self.rooms[room].random_position()
@@ -419,7 +420,7 @@ class Level:
             if len(valid_pos) != 0:
                 for _ in range(num_monster):
                     x, y = valid_pos.pop()
-                    self.entities.append(entity.monster('M', tcod.red, x, y))
+                    self.entities.append(monster.generate(x, y))
 
                 for _ in range(num_item):
                     x, y = valid_pos.pop()

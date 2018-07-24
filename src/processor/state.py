@@ -24,6 +24,10 @@ class StatePlayerTurn(esper.Processor):
                 inventory = self.scene.action.get('next_level')[1]
                 self.scene.manager.next_level(player_entity=player, item_entities=inventory)
 
+            if self.scene.action.get('level_up'):
+                self.scene.action = {}
+                self.scene.change_processors('level_up')
+
 
 class StateEnemyTurn(esper.Processor):
     scene = None
@@ -73,3 +77,15 @@ class StateTitle(esper.Processor):
 
             if self.scene.action.get('load_game'):
                 self.scene.manager.load_game()
+
+
+class StateLevelUp(esper.Processor):
+    scene = None
+
+    def __init__(self):
+        super().__init__()
+
+    def process(self, *args):
+        if self.scene.action != {}:
+            if self.scene.action.get('level_up'):
+                self.scene.change_processors('player_turn')

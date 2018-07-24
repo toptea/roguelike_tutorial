@@ -107,6 +107,24 @@ class StatusModifier:
     poison: bool = False
 
 
+@dataclass
+class Experience:
+    level: int = 1
+    xp: int = 0
+    level_up_base: int = 200
+    level_up_factor: int = 150
+
+    @property
+    def xp_to_next_level(self):
+        return (self.level * self.level_up_factor) + self.level_up_base
+
+
+@dataclass
+class ExperienceModifier:
+    level: int = 0
+    xp: int = 400
+
+
 # https://github.com/ericvsmith/dataclasses/blob/master/dataclass_tools.py
 # def autoslots(cls):
 #     if '__slots__' in cls.__dict__:
