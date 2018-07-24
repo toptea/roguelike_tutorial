@@ -27,4 +27,4 @@ class Console(esper.Processor):
             self.scene.message.append(('save screenshot', tcod.blue))
 
         if self.scene.action.get('randomize_scene'):
-            self.scene.manager.next_level()
+            self.scene.manager.randomize_scene()

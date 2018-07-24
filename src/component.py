@@ -85,11 +85,10 @@ class Stats:
 
 @dataclass
 class Status:
-    countdown: int = 3
     confuse: bool = False
     paralyse: bool = False
-    freeze: bool = False
-    burn: bool = False
+    sleep: bool = False
+    poison: bool = False
 
 
 @dataclass
@@ -102,29 +101,10 @@ class StatsModifier:
 
 @dataclass
 class StatusModifier:
-    countdown: int = 3
     confuse: bool = False
     paralyse: bool = False
-    freeze: bool = False
-    burn: bool = False
-
-
-@dataclass
-class Experience:
-    level: int = 1
-    xp: int = 0
-    level_up_base: int = 200
-    level_up_factor: int = 150
-
-    @property
-    def xp_to_next_level(self):
-        return (self.level * self.level_up_factor) + self.level_up_base
-
-
-@dataclass
-class ExperienceModifier:
-    level: int = 0
-    xp: int = 400
+    sleep: bool = False
+    poison: bool = False
 
 
 # https://github.com/ericvsmith/dataclasses/blob/master/dataclass_tools.py
