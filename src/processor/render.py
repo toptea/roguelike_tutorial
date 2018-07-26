@@ -18,8 +18,9 @@ class Singleton(type):
 class RenderConsole(esper.Processor):
     scene = None
 
-    def __init__(self):
+    def __init__(self, targeting=False):
         super().__init__()
+        self.targeting = targeting
 
     def get_entities(self):
         iterable = list(self.world.get_components(c.Renderable, c.Position))
@@ -30,6 +31,8 @@ class RenderConsole(esper.Processor):
     def process(self):
         self.render_map()
         self.render_entity()
+        if self.targeting:
+            self.render_target_cursor()
         self.blit_console()
         self.flush_console()
         self.clear_entity()
@@ -80,13 +83,22 @@ class RenderConsole(esper.Processor):
         for (rend, pos) in self.get_entities():
             if self.scene.game_map.fov[pos.y, pos.x]:
                 self.scene.con.default_fg = rend.fg
-                self.scene.con.default_bg = rend.bg
+                # self.scene.con.default_bg = rend.bg
                 self.scene.con.print_(
                     x=pos.x,
                     y=pos.y,
                     string=rend.char,
                     bg_blend=rend.bg_blend
                 )
+
+    def render_target_cursor(self):
+        self.scene.con.default_fg = tcod.red
+        self.scene.con.print_(
+            x=self.scene.mouse.cx,
+            y=self.scene.mouse.cy,
+            string='X',
+            bg_blend=tcod.BKGND_NONE
+        )
 
     def blit_console(self):
         self.scene.con.blit(
@@ -135,6 +147,7 @@ class RenderPanel(esper.Processor, metaclass=Singleton):
         self.render_name_under_mouse()
         self.render_message()
         self.blit_panel()
+        # self._render_fps_counter(self.scene.panel)
 
     def render_player_hp(self):
         for stats in self.get_player_stats():
@@ -239,19 +252,20 @@ class RenderPanel(esper.Processor, metaclass=Singleton):
         console.default_fg = tcod.grey
         console.print_(
             x=1, y=3,
-            string='last frame : %3d ms (%3d fps)' % (
-                tcod.sys_get_last_frame_length() * 1000.0,
-                tcod.sys_get_fps()),
+            string='fps: %3d fps' % (tcod.sys_get_fps()),
             bg_blend=tcod.BKGND_NONE,
-            # alignment=tcod.RIGHT
         )
         console.print_(
             x=1, y=4,
-            string='elapsed : %8d ms %4.2fs' % (
-                tcod.sys_elapsed_milli(),
-                tcod.sys_elapsed_seconds()),
+            string='last frame: %2d ms' % (
+                tcod.sys_get_last_frame_length() * 1000.0,
+            ),
             bg_blend=tcod.BKGND_NONE,
-            # alignment=tcod.RIGHT,
+        )
+        console.print_(
+            x=1, y=5,
+            string='elapsed: %4.2fs' % (tcod.sys_elapsed_seconds()),
+            bg_blend=tcod.BKGND_NONE,
         )
 
 

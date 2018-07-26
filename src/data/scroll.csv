@@ -1,7 +1,7 @@
 name,char,fg,hp,countdown,confuse,paralyse,freeze,burn
-magic missile,#,light_purple,18,0,0,0,0,0
-fireball,#,light_red,10,3,0,0,0,1
-ice shard,#,light_sea,10,3,0,0,1,0
-lightning,#,light_yellow,10,3,0,1,0,0
-tornado,#,lightest_grey,15,3,1,0,0,0
-earthquake,#,light_lime,10,3,0,1,0,0
+magic missile,#,light_purple,-18,0,0,0,0,0
+fireball,#,light_red,-8,3,0,0,0,1
+ice shard,#,light_sea,-10,3,0,0,1,0
+lightning,#,light_yellow,-9,3,0,1,0,0
+tornado,#,lightest_grey,-15,3,1,0,0,0
+earthquake,#,light_lime,-11,3,0,1,0,0

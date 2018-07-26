@@ -1,5 +1,6 @@
 import component as c
 
+import random
 import esper
 import math
 import tcod
@@ -29,15 +30,27 @@ class MoveEnemy(esper.Processor):
             c.Movable,
             c.Position,
             c.Describable,
-            c.Stats
+            c.Stats,
+            c.Status
         )
 
         for player, (_, _, player_pos, player_desc, player_stats) in g_player:
-            for enemy, (_, _, enemy_pos, enemy_desc, enemy_stats) in g_enemy:
+            for enemy, (_, _, enemy_pos, enemy_desc, enemy_stats, enemy_status) in g_enemy:
 
                 # if enemy is within range, move towards the player
                 if self.find_distance(player_pos, enemy_pos) <= 5:
                     new_y, new_x = self.move_toward(enemy_pos, player_pos)
+
+                    #under status
+                    if enemy_status.paralyse or enemy_status.freeze:
+                        new_x, new_y = enemy_pos.x, enemy_pos.y
+
+                    if enemy_status.confuse:
+                        new_x = enemy_pos.x + random.randint(-1, 1)
+                        new_y = enemy_pos.y + random.randint(-1, 1)
+
+                        if not self.scene.game_map.walkable[new_y, new_x]:
+                            break
 
                     # check for collision on player
                     if new_x == player_pos.x and new_y == player_pos.y:

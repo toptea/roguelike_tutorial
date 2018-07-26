@@ -89,6 +89,7 @@ class InputPlayer(esper.Processor):
         }
 
     def process(self):
+        # tcod.sys_check_for_event(
         tcod.sys_wait_for_event(
             mask=tcod.EVENT_ANY,
             k=self.key,
@@ -242,3 +243,4 @@ class InputTargeting(esper.Processor):
             self.scene.action['left_click'] = (x, y)
         if self.mouse.rbutton_pressed:
             self.scene.action['right_click'] = (x, y)
+        self.scene.mouse = self.mouse
