@@ -87,6 +87,12 @@ class RandomScroll:
         with open('data/scroll.csv', newline='') as file:
             reader = csv.DictReader(file)
             for i, row in enumerate(reader):
+                row['countdown'] = int(row['countdown'])
+                row['confuse'] = bool(int(row['confuse']))
+                row['paralyse'] = bool(int(row['paralyse']))
+                row['freeze'] = bool(int(row['freeze']))
+                row['burn'] = bool(int(row['burn']))
+                row['hp'] = int(row['hp'])
                 row['fg'] = getattr(tcod, row['fg'])
                 self.scrolls[i] = row
 
@@ -97,17 +103,29 @@ class RandomScroll:
             char=row['char'],
             fg=row['fg'],
             x=x,
-            y=y
+            y=y,
+            countdown=row['countdown'],
+            confuse=row['confuse'],
+            paralyse=row['paralyse'],
+            freeze=row['freeze'],
+            burn=row['burn'],
+            hp=row['hp']
         )
 
 
-def scroll(name='fireball', char='#', fg=tcod.red, x=0, y=0):
+def scroll(name, char, fg, x, y, countdown, confuse, paralyse, freeze, burn, hp):
     return (
         c.Position(x=x, y=y),
         c.Renderable(char=char, fg=fg, layer=const.LAYER_ITEM),
         c.Describable(name=name),
         c.Carryable(),
         c.Aimable(),
-        c.StatsModifier(hp=-200),
-        c.StatusModifier(),
+        c.StatsModifier(hp=hp),
+        c.StatusModifier(
+            countdown=countdown,
+            confuse=confuse,
+            paralyse=paralyse,
+            freeze=freeze,
+            burn=burn,
+        ),
     )

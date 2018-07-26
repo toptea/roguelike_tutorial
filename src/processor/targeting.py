@@ -21,7 +21,7 @@ class UpdateTargeting(esper.Processor):
 
         for item, (_, _, stats_mod, status_mod, item_desc) in iterable:
             if self.scene.action.get('target_with') == item:
-                yield (item, stats_mod, item_desc)
+                yield (item, stats_mod, status_mod, item_desc)
 
     def get_inventory(self):
         iterable = self.world.get_components(
@@ -42,24 +42,40 @@ class UpdateTargeting(esper.Processor):
         for _, (pos, target_stats, target_status, target_desc) in iterable:
             if pos.x == x and pos.y == y:
                 if self.scene.game_map.fov[pos.y, pos.x]:
-                    yield (target_stats, target_desc)
+                    yield (target_stats, target_status, target_desc)
 
     def process(self, *args):
 
         if self.scene.action.get('left_click'):
-            for target_stats, target_desc in self.get_target():
-                for item, stats_mod, item_desc in self.get_scroll():
+            for target_stats, target_status, target_desc in self.get_target():
+                for item, stats_mod, status_mod, item_desc in self.get_scroll():
                     target_stats.hp += stats_mod.hp
                     self.scene.message.append(
-                        ('The missile hit {}, dealing {} damage!'.format(target_desc.name, abs(stats_mod.hp)), tcod.orange)
+                        (
+                            '{} hit {}, dealing {} damage!'.format(
+                                item_desc.name,
+                                target_desc.name,
+                                abs(stats_mod.hp)
+                            )
+                            , tcod.orange
+                        )
                     )
+                    if status_mod.countdown > 0:
+                        target_status.countdown = status_mod.countdown
+                        target_status.confuse = status_mod.confuse
+                        target_status.paralyse = status_mod.paralyse
+                        target_status.freeze = status_mod.freeze
+                        target_status.burn = status_mod.burn
+
                     for inventory in self.get_inventory():
                         inventory.items.remove(item)
                         self.world.delete_entity(item)
 
                     self.scene.action = {'hit_target': True}
+                    return
             else:
                 self.scene.action['left_click'] = None
                 self.scene.message.append(
                     ('There is no targetable enemy at that location', tcod.yellow)
                 )
+

@@ -85,7 +85,7 @@ class Stats:
 
 @dataclass
 class Status:
-    countdown: int = 3
+    countdown: int = 0
     confuse: bool = False
     paralyse: bool = False
     freeze: bool = False

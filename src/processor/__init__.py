@@ -5,9 +5,11 @@ from .move_enemy import MoveEnemy
 from .experience import Experience
 from .stairs import TakeStairs
 from .console import Console
+from .status import Status
 from .pickup import PickUp
 from .death import Death
 from .fov import FOV
+
 
 from .render import (
     RenderConsole,
@@ -59,8 +61,10 @@ PROCESSOR_GROUP = {
         StatePlayerTurn()
     ],
     'enemy_turn': [
+        Status(),
         MoveEnemy(),
         Death(),
+        RenderPanel(),
         StateEnemyTurn(),
     ],
     'show_inventory': [
@@ -79,7 +83,7 @@ PROCESSOR_GROUP = {
     ],
     'targeting': [
         RenderPanel(),
-        RenderConsole(),
+        RenderConsole(targeting=True),
         InputTargeting(),
         UpdateTargeting(),
         Death(),
