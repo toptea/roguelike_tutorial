@@ -19,7 +19,8 @@ class SceneManager:
         self.root_console = tcod.console_init_root(
             w=const.SCREEN_WIDTH,
             h=const.SCREEN_HEIGHT,
-            title=const.TITLE
+            title=const.TITLE,
+            renderer=tcod.RENDERER_GLSL
         )
         self.scenes = {
             'menu': MainMenu(),
@@ -104,7 +105,7 @@ class Game(Scene):
         self.world = world
         self.game_map = game_map
         if world is None:
-            self.world = esper.World()
+            self.world = esper.CachedWorld()
         if game_map is None:
             self._create_level(create_player)
         self.astar = tcod.path.AStar(self.game_map.walkable)
@@ -121,6 +122,7 @@ class Game(Scene):
             width=const.MAP_WIDTH,
             height=const.MAP_HEIGHT
         )
+        self._render_unexplored_map()
 
         self.panel = tcod.console.Console(
             width=const.SCREEN_WIDTH,
@@ -140,6 +142,11 @@ class Game(Scene):
                 self.world.create_entity(*entity)
         self.start_pos = lvl.get_start_position()
         self.game_map = lvl.game_map
+
+    def _render_unexplored_map(self):
+        self.con.ch[:] = 219
+        self.con.fg[:] = (15, 10, 5)
+        self.con.bg[:] = (15, 10, 5)
 
     def change_processors(self, state):
         self.world._processors = self.processor_group[state]

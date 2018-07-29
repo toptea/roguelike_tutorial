@@ -21,8 +21,11 @@ class RenderConsole(esper.Processor):
     def __init__(self, targeting=False):
         super().__init__()
         self.targeting = targeting
+        self.width = const.MAP_WIDTH
+        self.height = const.MAP_HEIGHT
 
     def get_entities(self):
+        # not optimal, but it works!
         iterable = list(self.world.get_components(c.Renderable, c.Position))
         iterable.sort(key=lambda row: row[1][0].layer)
         for _, (rend, pos) in iterable:
@@ -75,10 +78,6 @@ class RenderConsole(esper.Processor):
             con.fg[dark_roof] = (60, 55, 50)
             con.bg[dark_roof] = (30, 20, 10)
 
-            con.ch[~game_map.explored] = 219
-            con.fg[~game_map.explored] = (15, 10, 5)
-            con.bg[~game_map.explored] = (15, 10, 5)
-
     def render_entity(self):
         for (rend, pos) in self.get_entities():
             if self.scene.game_map.fov[pos.y, pos.x]:
@@ -92,19 +91,20 @@ class RenderConsole(esper.Processor):
                 )
 
     def render_target_cursor(self):
-        self.scene.con.default_fg = tcod.red
-        self.scene.con.print_(
-            x=self.scene.mouse.cx,
-            y=self.scene.mouse.cy,
-            string='X',
-            bg_blend=tcod.BKGND_NONE
-        )
+        if self.scene.game_map.fov[self.scene.mouse.cy, self.scene.mouse.cx]:
+            self.scene.con.default_fg = tcod.red
+            self.scene.con.print_(
+                x=self.scene.mouse.cx,
+                y=self.scene.mouse.cy,
+                string='X',
+                bg_blend=tcod.BKGND_NONE
+            )
 
     def blit_console(self):
         self.scene.con.blit(
             dest=self.scene.manager.root_console,
-            width=const.MAP_WIDTH,
-            height=const.MAP_HEIGHT
+            width=self.width,
+            height=self.height
         )
 
     def flush_console(self):
@@ -112,12 +112,13 @@ class RenderConsole(esper.Processor):
 
     def clear_entity(self):
         for (rend, pos) in self.get_entities():
-            self.scene.con.print_(
-                x=pos.x,
-                y=pos.y,
-                string=' ',
-                bg_blend=rend.bg_blend
-            )
+            if self.scene.game_map.fov[pos.y, pos.x]:
+                self.scene.con.print_(
+                    x=pos.x,
+                    y=pos.y,
+                    string=' ',
+                    bg_blend=rend.bg_blend
+                )
 
 
 class RenderPanel(esper.Processor, metaclass=Singleton):
@@ -147,7 +148,7 @@ class RenderPanel(esper.Processor, metaclass=Singleton):
         self.render_name_under_mouse()
         self.render_message()
         self.blit_panel()
-        # self._render_fps_counter(self.scene.panel)
+        self._render_fps_counter(self.scene.panel)
 
     def render_player_hp(self):
         for stats in self.get_player_stats():

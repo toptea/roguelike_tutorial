@@ -3,7 +3,28 @@ import const
 import tcod
 
 
-@dataclass
+def auto_slots(cls):
+    # https://github.com/ericvsmith/dataclasses/blob/master/dataclass_tools.py
+    if '__slots__' in cls.__dict__:
+        raise TypeError(f'{cls.__name__} already specifies __slots__')
+    cls_dict = dict(cls.__dict__)
+    field_names = tuple(f.name for f in fields(cls))
+    cls_dict['__slots__'] = field_names
+    for field_name in field_names:
+        cls_dict.pop(field_name, None)
+    cls_dict.pop('__dict__', None)
+    qualname = getattr(cls, '__qualname__', None)
+    cls = type(cls)(cls.__name__, cls.__bases__, cls_dict)
+    if qualname is not None:
+        cls.__qualname__ = qualname
+    return cls
+
+
+def component(cls):
+    return auto_slots(dataclass(cls))
+
+
+@component
 class Renderable:
     char: str = '@'
     fg: tuple = (255, 255, 255)
@@ -12,70 +33,70 @@ class Renderable:
     layer: int = const.LAYER_ACTOR
 
 
-@dataclass
+@component
 class Position:
     x: int
     y: int
 
 
-@dataclass
+@component
 class Movable:
     pass
 
 
-@dataclass
+@component
 class Collidable:
     pass
 
 
-@dataclass
+@component
 class Describable:
     name: str = ''
     desc: str = ''
 
 
-@dataclass
+@component
 class Inventory:
     items: list
     capacity: int = 2
 
 
-@dataclass
+@component
 class PlayerTurn:
     pass
 
 
-@dataclass
+@component
 class EnemyTurn:
     pass
 
 
-@dataclass
+@component
 class Consumable:
     pass
 
 
-@dataclass
+@component
 class Carryable:
     pass
 
 
-@dataclass
+@component
 class Wearable:
     pass
 
 
-@dataclass
+@component
 class Aimable:
     pass
 
 
-@dataclass
+@component
 class Enterable:
     pass
 
 
-@dataclass
+@component
 class Stats:
     hp: int = 30
     max_hp: int = 30
@@ -83,7 +104,7 @@ class Stats:
     power: int = 5
 
 
-@dataclass
+@component
 class Status:
     countdown: int = 0
     confuse: bool = False
@@ -92,7 +113,7 @@ class Status:
     burn: bool = False
 
 
-@dataclass
+@component
 class StatsModifier:
     hp: int = 0
     max_hp: int = 0
@@ -100,7 +121,7 @@ class StatsModifier:
     power: int = 0
 
 
-@dataclass
+@component
 class StatusModifier:
     countdown: int = 3
     confuse: bool = False
@@ -109,7 +130,7 @@ class StatusModifier:
     burn: bool = False
 
 
-@dataclass
+@component
 class Experience:
     level: int = 1
     xp: int = 0
@@ -121,24 +142,7 @@ class Experience:
         return (self.level * self.level_up_factor) + self.level_up_base
 
 
-@dataclass
+@component
 class ExperienceModifier:
     level: int = 0
     xp: int = 400
-
-
-# https://github.com/ericvsmith/dataclasses/blob/master/dataclass_tools.py
-# def autoslots(cls):
-#     if '__slots__' in cls.__dict__:
-#         raise TypeError(f'{cls.__name__} already specifies __slots__')
-#     cls_dict = dict(cls.__dict__)
-#     field_names = tuple(f.name for f in fields(cls))
-#     cls_dict['__slots__'] = field_names
-#     for field_name in field_names:
-#         cls_dict.pop(field_name, None)
-#     cls_dict.pop('__dict__', None)
-#     qualname = getattr(cls, '__qualname__', None)
-#     cls = type(cls)(cls.__name__, cls.__bases__, cls_dict)
-#     if qualname is not None:
-#         cls.__qualname__ = qualname
-#     return cls
