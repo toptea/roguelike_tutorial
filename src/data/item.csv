@@ -1,0 +1,21 @@
+name,char,fg,hp,countdown,confuse,paralyse,freeze,burn
+magic missile,#,light_purple,-18,0,0,0,0,0
+fireball,#,light_amber,-8,3,0,0,0,1
+ice shard,#,light_sea,-10,3,0,0,1,0
+lightning,#,light_yellow,-9,3,0,1,0,0
+tornado,#,lightest_grey,-15,3,1,0,0,0
+earthquake,#,light_lime,-11,3,0,1,0,0
+small life flask,!,light_red,10,0,0,0,0,0
+medium life flask,!,light_red,20,0,0,0,0,0
+large life flask,!,light_red,30,0,0,0,0,0
+greater life flask,!,light_red,40,0,0,0,0,0
+grand life flask,!,light_red,50,0,0,0,0,0
+giant life flask,!,light_red,60,0,0,0,0,0
+colossal life flask,!,light_red,70,0,0,0,0,0
+sacred life flask,!,light_red,80,0,0,0,0,0
+hallowed life flask,!,light_red,90,0,0,0,0,0
+sanctified life flask,!,light_red,100,0,0,0,0,0
+divine life flask,!,light_red,150,0,0,0,0,0
+eternal life flask,!,light_red,200,0,0,0,0,0
+unidentified potion,?,light_cyan,-50,0,0,0,0,0
+unidentified potion,?,light_cyan,50,0,0,0,0,0

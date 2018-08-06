@@ -410,7 +410,7 @@ class Level:
             num_monster = np.random.randint(0, const.MAX_MONSTERS_PER_ROOM)
             num_item = np.random.randint(0, const.MAX_ITEMS_PER_ROOM)
             monster = entity.RandomMonster()
-            scroll = entity.RandomScroll()
+            item = entity.RandomItem()
 
             for _ in range(num_monster + num_item):
                 while True:
@@ -427,7 +427,7 @@ class Level:
                 for _ in range(num_item):
                     x, y = valid_pos.pop()
                     # self.entities.append(entity.healing_potion(x=x, x=y))
-                    self.entities.append(scroll.generate(x=x, y=y))
+                    self.entities.append(item.generate(x=x, y=y))
         for _ in range(num_stairs):
             x, y = valid_pos.pop()
             self.entities.append(entity.stairs(x, y))

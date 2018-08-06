@@ -28,25 +28,35 @@ class SceneManager:
             'game': Game(),
         }
         self.current_scene = self.scenes[state]
+        self.dungeon_level = 1
         Scene.manager = self
 
     def change_scene(self, state):
         self.current_scene = self.scenes[state]
 
     def next_level(self, player_entity=None, item_entities=None):
+        self.dungeon_level += 1
+        if self.dungeon_level % 3 == 0:
+            level_type = const.lvl_long_corridor
+        elif self.dungeon_level % 5 == 0:
+            level_type = const.lvl_monster_nest
+        elif self.dungeon_level % 13 == 0:
+            level_type = const.lvl_large_rooms
+        else:
+            level_type = const.lvl_default
+
         if player_entity:
             world = self.scenes['game'].world
             entities = world._entities.copy()
             for ent in (ent for ent in entities.keys() if ent != player_entity and ent not in item_entities):
                 world.delete_entity(ent, immediate=True)
-
-            self.scenes['game'] = Game(world=world, create_player=False)
+            self.scenes['game'] = Game(world=world, create_player=False, level_type=level_type)
             player_pos = self.scenes['game'].world.component_for_entity(player_entity, c.Position)
             x, y = self.scenes['game'].start_pos
             player_pos.x = x
             player_pos.y = y
         else:
-            self.scenes['game'] = Game()
+            self.scenes['game'] = Game(level_type=level_type)
         self.current_scene = self.scenes['game']
 
     def save_game(self):
@@ -100,14 +110,14 @@ class Scene:
 
 
 class Game(Scene):
-    def __init__(self, world=None, game_map=None, create_player=True):
+    def __init__(self, world=None, game_map=None, create_player=True, level_type=const.lvl_default):
         self.start_pos = None
         self.world = world
         self.game_map = game_map
         if world is None:
             self.world = esper.CachedWorld()
         if game_map is None:
-            self._create_level(create_player)
+            self._create_level(create_player, level_type)
         self.astar = tcod.path.AStar(self.game_map.walkable)
 
         self.processor_group = processor.PROCESSOR_GROUP
@@ -129,8 +139,8 @@ class Game(Scene):
             height=const.PANEL_HEIGHT
         )
 
-    def _create_level(self, create_player):
-        lvl = level.Level()
+    def _create_level(self, create_player, level_type):
+        lvl = level.Level(**level_type)
         lvl.make_blueprint()
         lvl.make_map()
         lvl.place_entities(create_player)

@@ -91,11 +91,19 @@ class RenderConsole(esper.Processor):
                 )
 
     def render_target_cursor(self):
-        if self.scene.game_map.fov[self.scene.mouse.cy, self.scene.mouse.cx]:
+        x = self.scene.mouse.cx
+        y = self.scene.mouse.cy
+        if x >= const.MAP_WIDTH:
+            x = const.MAP_WIDTH - 1
+
+        if y >= const.MAP_HEIGHT:
+            y = const.MAP_HEIGHT - 1
+
+        if self.scene.game_map.fov[y, x]:
             self.scene.con.default_fg = tcod.red
             self.scene.con.print_(
-                x=self.scene.mouse.cx,
-                y=self.scene.mouse.cy,
+                x=x,
+                y=y,
                 string='X',
                 bg_blend=tcod.BKGND_NONE
             )
@@ -286,14 +294,21 @@ class RenderInventory(esper.Processor):
 
     def get_player_inventory(self):
         iterable_1 = self.world.get_components(c.PlayerTurn, c.Inventory)
-        iterable_2 = self.world.get_components(c.Carryable, c.Describable)
+        iterable_2 = self.world.get_components(
+            c.Carryable,
+            c.Aimable,
+            c.StatsModifier,
+            c.StatusModifier,
+            c.Describable
+        )
         for _, (_, inventory) in iterable_1:
-            for item, (_, desc) in iterable_2:
+            for item, (_, _, _, _, desc) in iterable_2:
                 if item in inventory.items:
                     yield (item, desc.name)
 
     def process(self, *args):
         inventory = list(self.get_player_inventory())
+        inventory.sort(key=lambda tup: tup[0])
         if len(inventory) == 0:
             options = ['Inventory is empty.']
         else:

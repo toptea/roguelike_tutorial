@@ -58,7 +58,7 @@ class Describable:
 @component
 class Inventory:
     items: list
-    capacity: int = 2
+    capacity: int = 26
 
 
 @component
