@@ -17,6 +17,7 @@ class UpdateUseInventory(esper.Processor):
             c.Stats
         )
         for _, (_, inventory, stats) in iterable:
+            inventory.items.sort()
             index = int(self.scene.action.get('inventory_index'))
             if index < len(inventory.items):
                 use_item = inventory.items[index]
@@ -57,12 +58,15 @@ class UpdateUseInventory(esper.Processor):
     def use_aimable(self):
         scroll_components = self.world.get_components(
             c.Carryable,
-            c.Aimable
+            c.Aimable,
+            c.StatsModifier,
+            c.StatusModifier,
+            c.Describable
         )
         for (use_item, inventory, stats) in self.get_player_item():
-            for item, (_, _) in scroll_components:
+            for item, (_, _, _, _, _) in scroll_components:
                 if use_item == item:
-                    self.scene.action = {'target_with': item}
+                    self.scene.action = {'target_with': (item, inventory)}
 
 
 class UpdateDropInventory(esper.Processor):

@@ -16,6 +16,10 @@ class RandomMonster:
             reader = csv.DictReader(file)
             for i, row in enumerate(reader):
                 row['fg'] = getattr(tcod, row['fg'])
+                row['exp'] = int(row['exp'])
+                row['hp'] = int(row['hp'])
+                row['defense'] = int(row['defense'])
+                row['power'] = int(row['power'])
                 self.monsters[i] = row
 
     def generate(self, x, y):
@@ -25,11 +29,15 @@ class RandomMonster:
             char=row['char'],
             fg=row['fg'],
             x=x,
-            y=y
+            y=y,
+            xp=row['exp'],
+            hp=row['hp'],
+            defense=row['defense'],
+            power=row['power']
         )
 
 
-def monster(name, char, fg, x, y):
+def monster(name, char, fg, x, y, xp, hp, defense, power):
     return (
         c.EnemyTurn(),
         c.Position(x=x, y=y),
@@ -37,9 +45,9 @@ def monster(name, char, fg, x, y):
         c.Renderable(char=char, fg=fg),
         c.Collidable(),
         c.Describable(name=name),
-        c.Stats(hp=10, defense=0, power=3),
+        c.Stats(hp=hp, max_hp=hp, defense=defense, power=power),
         c.Status(),
-        c.ExperienceModifier(),
+        c.ExperienceModifier(xp=xp),
     )
 
 
@@ -51,7 +59,7 @@ def player(x, y):
         c.Renderable('@'),
         c.Collidable(),
         c.Describable(name='player'),
-        c.Stats(max_hp=30, hp=30, defense=2, power=5),
+        c.Stats(max_hp=1000, hp=1000, defense=1, power=5),
         c.Status(),
         c.Inventory([]),
         c.Experience(),
@@ -78,13 +86,13 @@ def healing_potion(x, y):
     )
 
 
-class RandomScroll:
+class RandomItem:
     def __init__(self):
         self.scrolls = {}
         self._load_csv()
 
     def _load_csv(self):
-        with open('data/scroll.csv', newline='') as file:
+        with open('data/item.csv', newline='') as file:
             reader = csv.DictReader(file)
             for i, row in enumerate(reader):
                 row['countdown'] = int(row['countdown'])
@@ -98,7 +106,7 @@ class RandomScroll:
 
     def generate(self, x, y):
         row = random.choice(self.scrolls)
-        return scroll(
+        return item(
             name=row['name'],
             char=row['char'],
             fg=row['fg'],
@@ -113,7 +121,7 @@ class RandomScroll:
         )
 
 
-def scroll(name, char, fg, x, y, countdown, confuse, paralyse, freeze, burn, hp):
+def item(name, char, fg, x, y, countdown, confuse, paralyse, freeze, burn, hp):
     return (
         c.Position(x=x, y=y),
         c.Renderable(char=char, fg=fg, layer=const.LAYER_ITEM),

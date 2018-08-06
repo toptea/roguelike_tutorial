@@ -20,16 +20,13 @@ class UpdateTargeting(esper.Processor):
         )
 
         for item, (_, _, stats_mod, status_mod, item_desc) in iterable:
-            if self.scene.action.get('target_with') == item:
+            if self.scene.action.get('target_with')[0] == item:
                 yield (item, stats_mod, status_mod, item_desc)
 
     def get_inventory(self):
-        iterable = self.world.get_components(
-            c.PlayerTurn,
-            c.Inventory,
-        )
-        for _, (_, inventory) in iterable:
-            yield inventory
+        inventory = self.scene.action.get('target_with')[1]
+        inventory.items.sort()
+        return inventory
 
     def get_target(self):
         x, y = self.scene.action.get('left_click')
@@ -50,16 +47,31 @@ class UpdateTargeting(esper.Processor):
             for target_stats, target_status, target_desc in self.get_target():
                 for item, stats_mod, status_mod, item_desc in self.get_scroll():
                     target_stats.hp += stats_mod.hp
-                    self.scene.message.append(
-                        (
-                            '{} hit {}, dealing {} damage!'.format(
-                                item_desc.name,
-                                target_desc.name,
-                                abs(stats_mod.hp)
+                    if target_stats.hp > target_stats.max_hp:
+                        target_stats.hp = target_stats.max_hp
+
+                    if stats_mod.hp > 0:
+                        self.scene.message.append(
+                            (
+                                '{} heal {}, recovering {} HP!'.format(
+                                    item_desc.name,
+                                    target_desc.name,
+                                    stats_mod.hp
+                                )
+                                , tcod.orange
                             )
-                            , tcod.orange
                         )
-                    )
+                    else:
+                        self.scene.message.append(
+                            (
+                                '{} hit {}, dealing {} damage!'.format(
+                                    item_desc.name,
+                                    target_desc.name,
+                                    stats_mod.hp
+                                )
+                                , tcod.orange
+                            )
+                        )
                     if status_mod.countdown > 0:
                         target_status.countdown = status_mod.countdown
                         target_status.confuse = status_mod.confuse
@@ -67,9 +79,9 @@ class UpdateTargeting(esper.Processor):
                         target_status.freeze = status_mod.freeze
                         target_status.burn = status_mod.burn
 
-                    for inventory in self.get_inventory():
-                        inventory.items.remove(item)
-                        self.world.delete_entity(item)
+                    inventory = self.get_inventory()
+                    inventory.items.remove(item)
+                    self.world.delete_entity(item)
 
                     self.scene.action = {'hit_target': True}
                     return

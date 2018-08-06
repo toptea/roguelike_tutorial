@@ -56,7 +56,7 @@ class InputPlayer(esper.Processor):
             Key(vk=tcod.KEY_KP7): {'move': (-1, -1)},
             Key(vk=tcod.KEY_KP8): {'move': (0, -1)},
             Key(vk=tcod.KEY_KP9): {'move': (1, -1)},
-            Key(vk=tcod.KEY_F1): {'randomize_scene': True},
+            Key(vk=tcod.KEY_F1): {'next_level': (None, None)},
             Key(vk=tcod.KEY_F5): {'reveal_all': True},
             Key(vk=tcod.KEY_F12): {'screenshot': True},
             Key(ch='a'): {},
@@ -85,7 +85,7 @@ class InputPlayer(esper.Processor):
             Key(ch='x'): {},
             Key(ch='y'): {'move': (-1, -1)},
             Key(ch='z'): {},
-            Key(ch='.'): {'move': (0, 0)}
+            Key(ch='.'): {'move': (0, 0)},
         }
 
     def process(self):

@@ -63,8 +63,8 @@ MONSTER_COLORS = (
     tcod.sepia,
 )
 
-# default
-s1 = {
+
+lvl_default = {
     'max_rooms': 12,
     'room_min_width': 5,
     'room_max_width': 10,
@@ -81,11 +81,11 @@ s1 = {
     'prob_diagonal_tunnel': 0.12
 }
 
-# long corridor
-s2 = {
-    'max_rooms': 20,
-    'room_min_width': 3,
-    'room_max_width': 5,
+
+lvl_long_corridor = {
+    'max_rooms': 16,
+    'room_min_width': 4,
+    'room_max_width': 6,
     'room_min_height': 3,
     'room_max_height': 4,
 
@@ -99,11 +99,10 @@ s2 = {
     'prob_diagonal_tunnel': 0
 }
 
-# monster nest
-s3 = {
+lvl_monster_nest = {
     'max_rooms': 20,
-    'room_min_width': 3,
-    'room_max_width': 5,
+    'room_min_width': 4,
+    'room_max_width': 6,
     'room_min_height': 3,
     'room_max_height': 4,
 
@@ -117,8 +116,8 @@ s3 = {
     'prob_diagonal_tunnel': 1.0
 }
 
-# large rooms
-s4 = {
+
+lvl_large_rooms = {
     'max_rooms': 5,
     'room_min_width': 10,
     'room_max_width': 12,
@@ -133,42 +132,4 @@ s4 = {
     'prob_h_to_v_tunnel': 0.0,
     'prob_v_to_h_tunnel': 0.0,
     'prob_diagonal_tunnel': 1
-}
-
-
-# monster nest extreme
-s5 = {
-    'max_rooms': 40,
-    'room_min_width': 3,
-    'room_max_width': 5,
-    'room_min_height': 3,
-    'room_max_height': 4,
-
-    'prob_irregular_rect_room': 0.60,
-    'prob_irregular_circ_room': 0.40,
-    'prob_ellipse_room': 0.00,
-    'prob_rect_room': 0.00,
-
-    'prob_h_to_v_tunnel': 0.00,
-    'prob_v_to_h_tunnel': 0.00,
-    'prob_diagonal_tunnel': 1.0
-}
-
-
-# long corridor extreme
-s6 = {
-    'max_rooms': 40,
-    'room_min_width': 3,
-    'room_max_width': 5,
-    'room_min_height': 3,
-    'room_max_height': 4,
-
-    'prob_irregular_rect_room': 0.60,
-    'prob_irregular_circ_room': 0.40,
-    'prob_ellipse_room': 0.00,
-    'prob_rect_room': 0.00,
-
-    'prob_h_to_v_tunnel': 0.50,
-    'prob_v_to_h_tunnel': 0.50,
-    'prob_diagonal_tunnel': 0
 }

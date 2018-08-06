@@ -1,53 +1,52 @@
-name,char,fg, exp
-angel,A,light_yellow,44
-ant,a,light_red,3
-baby dragon,d,light_sky,34
-bat,b,light_blue,4
-bird,B,light_sky,30
-canine,C,light_flame,11
-cat,f,light_purple,25
-centipede,c,light_amber,5
-dragon,D,light_azure,53
-elemental,E,light_amber,35
-fire vortex,v,light_red,42
-floating eye,e,light_pink,12
-fly trap,F,light_lime,22
-forgotten beast,U,light_fuchsia,9
-golem,g,light_orange,36
-grizzly bear,q,light_orange,37
-horror,u,light_purple,32
-humaniod,h,light_crimson,47
-hydra,M,light_turquoise,43
-icky thing,i,light_magenta,6
-insect swarm,I,light_han,51
-jelly,j,light_magenta,19
-killer beetle,K,light_violet,48
-kobold,k,light_chartreuse,13
-large humaniod,H,light_yellow,50
-lich,L,lightest_sepia,45
-mage,p,light_amber,8
-mold,m,light_lime,14
-naga,n,light_sea,27
-ogre,O,light_green,40
-orc,o,light_sea,23
-paladin,p,light_sky,31
-piranha,l,light_cyan,28
-pitiful looking beggar,t,light_crimson,2
-poltergeist,G,lightest_sepia,21
-priest,p,light_yellow,16
-quylthulg,Q,lightest_sepia,46
-rat,r,light_flame,24
-reptile,R,light_turquoise,15
-rogue,p,light_orange,17
-shadower,N,light_han,1
-skeleton,s,lightest_grey,33
-snake,J,light_chartreuse,7
-spider,S,light_blue,20
-troll,T,light_green,41
-vampire,V,light_fuchsia,49
-warrior,p,light_red,18
-worm mass,w,light_pink,10
-wraith,W,lightest_grey,52
-yeek,y,light_azure,38
-yeti,Y,light_cyan,29
-zombie,z,light_violet,39
+name,char,fg,exp,hp,defense,power
+beggar,t,light_crimson,3,5,0,1
+icky thing,i,light_magenta,3,4,0,2
+mold,m,light_lime,3,5,0,1
+rat,r,light_flame,6,6,0,2
+bat,b,light_blue,9,10,0,2
+cat,f,light_purple,9,11,0,2
+centipede,c,light_amber,12,13,0,2
+priest,p,light_yellow,12,30,0,1
+ant,a,light_red,14,12,0,3
+worm mass,w,light_pink,15,40,0,1
+jelly,j,light_magenta,15,4,0,10
+poltergeist,G,lightest_sepia,18,45,0,1
+floating eye,e,light_pink,24,31,0,2
+insect swarm,I,light_han,27,70,0,1
+piranha,l,light_cyan,30,5,0,10
+zombie,z,light_violet,36,32,0,3
+naga,n,light_sea,36,29,0,3
+warlock,p,light_orange,42,25,0,4
+skeleton,s,lightest_grey,45,10,2,6
+golem,g,light_orange,45,10,3,3
+kobold,k,light_chartreuse,48,30,0,4
+orc,o,light_sea,48,30,0,4
+bird,B,light_sky,50,31,0,4
+horror,u,light_purple,53,17,0,7
+reptile,R,light_turquoise,53,13,2,5
+humaniod,h,light_crimson,60,30,1,4
+rogue,p,light_amber,60,30,1,4
+fire vortex,v,light_red,60,30,0,5
+grizzly bear,q,light_orange,60,30,0,5
+paladin,p,light_sky,60,15,2,5
+fly trap,F,light_lime,60,20,0,8
+killer beetle,K,light_violet,60,30,0,5
+baby dragon,d,light_sky,63,20,1,6
+warrior,p,light_red,66,31,1,4
+canine,C,light_flame,66,43,0,4
+yeek,y,light_azure,72,45,0,4
+snake,J,light_chartreuse,75,10,0,10
+yeti,Y,light_cyan,75,30,1,5
+ogre,O,light_green,84,41,1,4
+spider,S,light_blue,85,12,0,13
+forgotten beast,U,light_fuchsia,90,30,2,4
+angel,A,light_yellow,100,3,3,0
+elemental,E,light_amber,100,35,0,7
+troll,T,light_green,120,20,2,8
+lich,L,lightest_sepia,150,12,1,10
+quylthulg,Q,lightest_sepia,150,20,3,5
+hydra,M,light_turquoise,200,40,1,8
+vampire,V,light_fuchsia,200,40,3,3
+wraith,W,lightest_grey,200,2,0,50
+large humaniod,H,light_yellow,210,50,2,5
+dragon,D,light_azure,500,37,2,10
