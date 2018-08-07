@@ -41,7 +41,7 @@ class UpdateTargeting(esper.Processor):
                 if self.scene.game_map.fov[pos.y, pos.x]:
                     yield (target_stats, target_status, target_desc)
 
-    def process(self, *args):
+    def process(self):
 
         if self.scene.action.get('left_click'):
             for target_stats, target_status, target_desc in self.get_target():

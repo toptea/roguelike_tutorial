@@ -97,7 +97,7 @@ class UpdateDropInventory(esper.Processor):
                 if drop_item == item:
                     yield (item, inventory, pos, desc)
 
-    def process(self, *args):
+    def process(self):
         if self.scene.action.get('inventory_index'):
             for item, inventory, pos, desc in self.get_drop_item():
                 inventory.items.remove(item)

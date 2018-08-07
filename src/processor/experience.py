@@ -26,7 +26,7 @@ class Experience(esper.Processor):
                 if enemy_stats.hp <= 0:
                     yield exp, exp_mod
 
-    def process(self, *args):
+    def process(self):
         for exp, experience_mod in self.get_experience():
             exp.xp += experience_mod.xp
 

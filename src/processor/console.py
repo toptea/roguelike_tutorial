@@ -9,7 +9,7 @@ class Console(esper.Processor):
     def __init__(self):
         super().__init__()
 
-    def process(self, *args):
+    def process(self):
 
         if self.scene.action.get('exit'):
             sys.exit()

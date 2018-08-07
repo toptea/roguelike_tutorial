@@ -9,7 +9,7 @@ class MovePlayer(esper.Processor):
     def __init__(self):
         super().__init__()
 
-    def process(self, *args):
+    def process(self):
         if self.scene.action.get('move'):
             player_c = self.world.get_components(
                 c.PlayerTurn,

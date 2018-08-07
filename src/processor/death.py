@@ -20,7 +20,7 @@ class Death(esper.Processor):
             if stats.hp <= 0:
                 yield (ent, rend, desc, stats)
 
-    def process(self, *args):
+    def process(self):
         for ent, rend, desc, stats in self.get_dead_entities():
             rend.char = '%'
             rend.fg = tcod.dark_red

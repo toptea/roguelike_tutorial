@@ -21,7 +21,7 @@ class FOV(esper.Processor):
         for _, (_, pos) in iterable:
             yield pos
 
-    def process(self, *args):
+    def process(self):
         if self.scene.fov_recompute:
             for pos in self.get_player_position():
                 tcod.map_compute_fov(

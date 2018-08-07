@@ -20,7 +20,7 @@ class Status(esper.Processor):
         for _, (_, stats, status, desc) in iterable:
             yield (stats, status, desc)
 
-    def process(self, *args):
+    def process(self):
         for stats, status, desc in self.get_enemies():
             if status.countdown <= 0:
                 status.confuse = False

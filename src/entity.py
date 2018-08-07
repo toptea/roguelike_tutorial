@@ -59,7 +59,7 @@ def player(x, y):
         c.Renderable('@'),
         c.Collidable(),
         c.Describable(name='player'),
-        c.Stats(max_hp=1000, hp=1000, defense=1, power=5),
+        c.Stats(max_hp=100, hp=100, defense=1, power=5),
         c.Status(),
         c.Inventory([]),
         c.Experience(),

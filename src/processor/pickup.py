@@ -28,7 +28,7 @@ class PickUp(esper.Processor):
                 if player_pos.x == item_pos.x and player_pos.y == item_pos.y:
                     yield (item, item_pos, item_desc, player_pos, inventory)
 
-    def process(self, *args):
+    def process(self):
         if self.scene.action.get('pickup'):
             for item, item_pos, item_desc, player_pos, inventory in self.get_pickup_item():
                 if len(inventory.items) >= inventory.capacity:

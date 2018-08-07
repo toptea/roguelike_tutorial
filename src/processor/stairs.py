@@ -28,7 +28,7 @@ class TakeStairs(esper.Processor):
                 if player_pos.x == stairs_pos.x and player_pos.y == stairs_pos.y:
                     yield (player, inventory, stats)
 
-    def process(self, *args):
+    def process(self):
         if self.scene.action.get('take_stairs'):
             for player, inventory, stats in self.get_player_on_stairs():
 

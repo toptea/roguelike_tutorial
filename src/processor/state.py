@@ -8,7 +8,7 @@ class StatePlayerTurn(esper.Processor):
     def __init__(self):
         super().__init__()
 
-    def process(self, *args):
+    def process(self):
         if self.scene.action != {}:
 
             if all(key in ['move', 'pickup'] for key in self.scene.action.keys()):
@@ -41,7 +41,7 @@ class StateEnemyTurn(esper.Processor):
     def __init__(self):
         super().__init__()
 
-    def process(self, *args):
+    def process(self):
         self.scene.change_processors('player_turn')
 
 
@@ -51,7 +51,7 @@ class StateShowInventory(esper.Processor):
     def __init__(self):
         super().__init__()
 
-    def process(self, *args):
+    def process(self):
         if self.scene.action != {}:
             if self.scene.action.get('target_with'):
                 self.scene.message.append(
@@ -68,7 +68,7 @@ class StateDropInventory(esper.Processor):
     def __init__(self):
         super().__init__()
 
-    def process(self, *args):
+    def process(self):
         if self.scene.action != {}:
             if self.scene.action.get('exit'):
                 self.scene.change_processors('player_turn')
@@ -80,7 +80,7 @@ class StateTitle(esper.Processor):
     def __init__(self):
         super().__init__()
 
-    def process(self, *args):
+    def process(self):
         if self.scene.action != {}:
 
             if self.scene.action.get('new_game'):
@@ -96,7 +96,7 @@ class StateLevelUp(esper.Processor):
     def __init__(self):
         super().__init__()
 
-    def process(self, *args):
+    def process(self):
         if self.scene.action != {}:
             if self.scene.action.get('level_up'):
                 self.scene.change_processors('player_turn')
@@ -108,7 +108,7 @@ class StateCharacterScreen(esper.Processor):
     def __init__(self):
         super().__init__()
 
-    def process(self, *args):
+    def process(self):
         if self.scene.action != {}:
             if self.scene.action.get('exit'):
                 self.scene.change_processors('player_turn')
@@ -120,7 +120,7 @@ class StateTargeting(esper.Processor):
     def __init__(self):
         super().__init__()
 
-    def process(self, *args):
+    def process(self):
         if self.scene.action != {}:
             if self.scene.action.get('exit'):
                 self.scene.action = {}
