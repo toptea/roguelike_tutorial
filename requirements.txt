@@ -1,7 +1,7 @@
 scikit-image
 dataclasses
 numpy
-esper
-tdl==5.0.1
+esper==2.5
+tdl
 
-# tcod pathfinding x and y coordinates are reversed
+# In esper 3.0, the World() object was removed and methods were all moved to the module level.

@@ -115,7 +115,7 @@ class Game(Scene):
         self.world = world
         self.game_map = game_map
         if world is None:
-            self.world = esper.CachedWorld()
+            self.world = esper.World()
         if game_map is None:
             self._create_level(create_player, level_type)
         self.astar = tcod.path.AStar(self.game_map.walkable)
@@ -182,6 +182,7 @@ class MainMenu(Scene):
             processor.StateTitle()
         )
         for num, proc in enumerate(processors):
+            print(self.world)
             self.world.add_processor(proc, priority=num)
             proc.scene = self
 

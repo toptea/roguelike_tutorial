@@ -1,0 +1,17 @@
+[project]
+name = "roguelike-tutorial"
+version = "0.1.0"
+description = "At r/roguelikedev, we're doing a dev-along following The Complete Roguelike Tutorial. Come and check this out!"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "esper==2.5",
+    "numpy>=2.2.3",
+    "scikit-image>=0.25.2",
+    "tdl>=6.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+]

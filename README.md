@@ -26,7 +26,7 @@ I'll be diverging a bit from the main Python tutorial by implementing Esper's en
 * [libtcod](http://roguecentral.org/doryen/data/libtcod/doc/1.5.1/index2.html) - original libtcod documentation
 * [numpy](https://docs.scipy.org/doc/numpy-1.14.0/index.html) - multi-dimensional array
 * [skimage](http://scikit-image.org/docs/stable/api/skimage.draw.html) - various algorithm shapes
-* [esper](https://github.com/benmoran56/esper) - entity component system
+* [esper 2.5](https://github.com/benmoran56/esper) - entity component system
 
 ## If you would like to participate 
 

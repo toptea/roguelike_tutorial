@@ -107,4 +107,6 @@ venv.bak/
 .idea/
 
 # save data
-src/data/save
+# src/data/save
+
+uv.lock
